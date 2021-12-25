@@ -1,0 +1,7 @@
+main =>
+  R := count_moves(read_file_chars(), 1, 0),
+  writeln(R).
+
+count_moves([], P, C) = cond(C < 0, P, fail).
+count_moves(['('|XS], P, C) = count_moves(XS, P+1, C+1).
+count_moves([')'|XS], P, C) = cond(C <= 0, P, count_moves(XS, P+1, C-1)).
