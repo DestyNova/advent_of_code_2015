@@ -9,9 +9,17 @@ I'd recommend the Advent of Code to anyone -- they're really fun and interesting
 ## Current code stats with [cloc](https://github.com/AlDanial/cloc)
 
 ```
-(Nothing yet)
+-------------------------------------------------------------------------------
+Language                     files          blank        comment           code
+-------------------------------------------------------------------------------
+Markdown                         2             22              0             34
+Prolog                           2              2              0             12
+Bourne Shell                     1              0              0              2
+-------------------------------------------------------------------------------
+SUM:                             5             24              0             48
+-------------------------------------------------------------------------------
 ```
 
 ## Retrospectives
 
-(Nothing yet)
+* Day 1: [Not Quite Lisp](https://github.com/DestyNova/advent_of_code_2015/blob/main/day_1/retro.md)
