@@ -1,0 +1,12 @@
+import util.
+
+main =>
+  R = sum([solve(L) : L in read_file_lines()]),
+  println(R).
+
+solve(S) = X => X = solve2(map(to_int, split(S, "x"))).
+
+solve2(Ds@[L,W,H]) = X =>
+  [A,B,_] = sort(Ds),
+  X = 2*A + 2*B + L*W*H,
+  println(X).

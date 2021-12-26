@@ -12,14 +12,15 @@ I'd recommend the Advent of Code to anyone -- they're really fun and interesting
 -------------------------------------------------------------------------------
 Language                     files          blank        comment           code
 -------------------------------------------------------------------------------
-Markdown                         2             22              0             34
-Prolog                           2              2              0             12
+Markdown                         3             31              0             56
+Prolog                           4              8              0             31
 Bourne Shell                     1              0              0              2
 -------------------------------------------------------------------------------
-SUM:                             5             24              0             48
+SUM:                             8             39              0             89
 -------------------------------------------------------------------------------
 ```
 
 ## Retrospectives
 
-* Day 1: [Not Quite Lisp](https://github.com/DestyNova/advent_of_code_2015/blob/main/day_1/retro.md)
+* Day 1: [Not Quite Lisp](https://github.com/DestyNova/advent_of_code_2015/blob/main/day1/retro.md)
+* Day 2: [I Was Told There Would Be No Math](https://github.com/DestyNova/advent_of_code_2015/blob/main/day2/retro.md)

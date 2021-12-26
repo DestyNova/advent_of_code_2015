@@ -1,5 +1,5 @@
 # Day 1: [Not Quite Lisp](https://adventofcode.com/2015/day/1)
-*Picat: [Part 1](https://github.com/DestyNova/advent_of_code_2015/blob/main/day_1/part1.pi), [Part 2](https://github.com/DestyNova/advent_of_code_2015/blob/main/day_1/part2.pi)
+*Picat: [Part 1](https://github.com/DestyNova/advent_of_code_2015/blob/main/day1/part1.pi), [Part 2](https://github.com/DestyNova/advent_of_code_2015/blob/main/day1/part2.pi)
 
 An easy puzzle to start the 2015 challenges.
 
