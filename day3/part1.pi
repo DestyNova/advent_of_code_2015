@@ -1,0 +1,19 @@
+import util.
+
+main =>
+  R = solve(read_line()),
+  println(R).
+
+solve(S) = solve2(S, new_map([(0,0)=1]), (0,0)).
+
+solve2([], M, _) = M.size().
+solve2([X|XS], M, P) = R =>
+  New_pos = update_pos(X,P),
+  Old_val = get(M, New_pos, 0),
+  M.put(New_pos, Old_val + 1),
+  R = solve2(XS, M, New_pos).
+
+update_pos('^', (I,J)) = (I,J+1).
+update_pos('<', (I,J)) = (I+1,J).
+update_pos('>', (I,J)) = (I-1,J).
+update_pos('v', (I,J)) = (I,J-1).
