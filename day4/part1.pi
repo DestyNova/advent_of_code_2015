@@ -1,4 +1,4 @@
-import cp.
+import sat.
 import util.
 import bitwise.
 
@@ -30,42 +30,36 @@ go(S,N) =>
   foreach(I in 1..8)
     S_buf[I + S_len] #= Vars[I] + 48
   end,
+  println(s_buf=S_buf),
 
   % calculate actual numeric value so we can minimise it
   N #= A*10**7 + B*10**6 + C*10**5 + D*10**4 + E*10**3 + F*10**2 + G*10**1 + H,
-  printf("S: %w, S_buf: %w\n", S, S_buf),
+  % printf("S: %w, S_buf: %w\n", S, S_buf),
 
   % describe MD5 in constraints, with S_len+8 to indicate the message size after appending a number
   % TODO: make it work first for concrete input, then reintroduce the S_buf version with constrained vars?
-  Test_list = new_list(64),
-  Test_list[1] = ord('a'),
-  % foreach(I in 2..9)
-  %   Test_list[I] = 0
-  % end,
-  % md5(Test_list, 9, R0),
-  md5(Test_list, 1, R0),
-  % println(r=R0),
-  % md5(S_buf, S_len + 8, R),
-  println(flatten([to_fstring("%02x", Byte) : Byte in R0])).
-
+  % Test_list = new_list(64),
+  % Test_list[1] = ord('a'),
+  % % foreach(I in 2..9)
+  % %   Test_list[I] = 0
+  % % end,
+  % % md5(Test_list, 9, R0),
+  % md5(Test_list, 1, R0),
+  % println(flatten([to_fstring("%02x", Byte) : Byte in R0])),
+  % crash(),
+  md5(S_buf, S_len + 8, R),
   % afterwards, first 5 characters of hash should be a zero char (ASCII 48)
-  % foreach(I in 1..4)
-  %   R[I] #= 48
-  % end,
+  foreach(I in 1..1)
+    R[I] #= 48
+  end,
 
-  % solve([$min(N)],Vars).
+  solve([$report(printf("Vars=%w  N=%w%n", Vars, N))],Vars),
+  println(r=R),
+  % println(s_buf=S_buf),
+  println(vars=Vars).
+%solve([$min(N),ff,split,$report(printf("Vars=%w  N=%w%n", Vars, N))],Vars).
 
-% TODO:
-% * Convert all MD5 logic to work on lists of ints, not chars
-% * Actually list logic might not work at all... maybe preallocate an array/list of length 512 bytes
-%   then set constraints on individual elements, e.g. with a foreach
-% * Implement constrained bitwise operations (refer to Hakan K's implementation + Neng-Fa's post)
-%   * Probably needs helpers to convert an int (or list of 4 ints?) to a list of 32 booleans and back
-%   * What about addition? Maybe doesn't need to be efficient, in which case I can just convert back to ints?
-% * Replace all mutating assignments with something else...
-% * Profit?
-
-md5(S, L, Result) =>
+md5(S, L, R) =>
   % Adapted from pseudocode here: https://en.wikipedia.org/wiki/MD5#Algorithm
   % Shift table
   Shifts = [7, 12, 17, 22,  7, 12, 17, 22,  7, 12, 17, 22,  7, 12, 17, 22,
@@ -117,7 +111,7 @@ md5(S, L, Result) =>
   S[L2+6] #= 0,
   S[L2+7] #= 0,
   S[L2+8] #= 0,
-  printf("L: %w, L2: %w, S: %w\n", L, L2, S),
+  %printf("L: %w, L2: %w, S: %w\n", L, L2, S),
 
   % process full messages in 512-bit (64 byte) chunks, but we only have one
   % then break each 64-byte chunk into 16 4-byte chunks
@@ -149,39 +143,6 @@ md5(S, L, Result) =>
   Gs :: 0..15,
 
   foreach(I in 0..63)
-    %println(inner=I),
-    % cond 1
-    % F1s[I+1] #= (B /\ C) \/ ((~B) /\ D),
-
-    % TODO: pick up from here... replace M with sliding windows over S?
-    % and fold F expressions back into the uber-cond so there's one F1s[I+1] #= cond(.....)
-    % then implement the bitwise operations as arithmetic. /\ + \/ probably ok, ^ I'm not sure about yet
-    % /\ probably done (unless // is not ok?)
-
-    % cond 2
-    % F2 #= (D /\ B) \/ ((~D) /\ C),
-    % I2 #= (5*I + 1) mod 16,
-    % FI2 #= (F2, I2),
-
-    % % cond 3
-    % F3 #= B ^ C ^ D,
-    % I3 #= (3*I + 5) mod 16,
-    % FI3 #= (F3, I3),
-
-    % % cond 4
-    % F4 #= C ^ (B \/ (~D)),
-    % I4 #= (7*I) mod 16,
-    % FI4 #= (F4, I4),
-
-    %%println("OK 1"),
-    % TODO: Actually not okay -- Picat's constraint solver doesn't understand bitwise operations: /\ \/ ^
-    %F1 #= ((B /\ C) \/ ((~B) /\ D),
-    % F1s[I+1] #= cond(I #=< 15, F1,
-    %               cond(I #=< 31, F2,
-    %                 cond(I #=< 47, F3, F4))),
-    % %println(wat=not32(not32(F1s[I+1]))),
-    %%println(f1=F1s[I+1]),
-    % not32(Bs[I+1], F1s[I+1]),
     if(I =< 15) then
       or32(and32(Bs[I+1],Cs[I+1]), and32(not32(Bs[I+1]), Ds[I+1]), F1s[I+1]),
       Gs[I+1] #= I,
@@ -192,29 +153,16 @@ md5(S, L, Result) =>
       xor32(Bs[I+1], xor32(Cs[I+1],Ds[I+1]), F1s[I+1]),
       Gs[I+1] #= (3*I + 5) mod 16
     else
-      xor32(Cs[I+1], or32(Bs[I+1], not32(Ds[I+1])), F1s[I+1]),
-      Gs[I+1] #= (7*I) mod 16
+      % I think we need to break these up to deal with not32 confusing the domain inference
+      not32(Ds[I+1], T1),
+      T2 :: 0..0x100000000,
+      or32(Bs[I+1], T1, T2),
+      mod(T2,0x100000000,T3),
+      xor32(Cs[I+1], T3, F1s[I+1]),
+      Gs[I+1] #= (7*I) mod 16,
     end,
-    % cond(I #=< 15, or32(and32(B,C), and32(not32(B), D), F1s[I+1]),
-    %   cond(I #=< 31, or32(and32(D,B), and32(not32(D), C)),
-    %     cond(I #=< 47, xor32(B, xor32(C,D)),
-    %       xor32(C, and32(B, not32(D)))))),
-
-    % Gs[I+1] #= cond(I #=< 15, I,
-    %             cond(I #=< 31, (5*I + 1) mod 16,
-    %               cond(I #=< 47, (3*I + 5) mod 16, (7*I) mod 16))),
-
-    %println(i=I),
-    %println(f1=F1s[I+1]),
-    %println(a=As[I+1]),
-    %println(b=Bs[I+1]),
-    %println(c=Cs[I+1]),
-    %println(d=Ds[I+1]),
-    %println(k=K[I+1]),
-    %println(g=Gs[I+1]),
-    % F := (F + A + K[I+1] + M[G+1]) /\ 0xffffffff,
     updateF(F1s[I+1], As[I+1], K[I+1], S, Gs[I+1], F2s[I+1]),
-    %println(f2b=F2s[I+1]),
+    % println(f2b=F2s[I+1]),
 
     % update accumulators for next round
     % A := D,
@@ -225,10 +173,10 @@ md5(S, L, Result) =>
     Cs[I+2] #= Bs[I+1],
 
     Sw = Shifts[I+1],
-    mod(Bs[I+1] + or32(shift_left32(F2s[I+1], Sw), shift_right32(F2s[I+1], 32-Sw)), 0x100000000, Bs[I+2]),
-    %println(b2=Bs[I+2]),
-    %println("--------"),
-    %if(I == 63) then crash() end
+    % mod(Bs[I+1] + or32(shift_left32(F2s[I+1], Sw), shift_right32(F2s[I+1], 32-Sw)), 0x100000000, Bs[I+2]),
+    or32(shift_left32(F2s[I+1], Sw), shift_right32(F2s[I+1], 32-Sw), Tmp),
+    Tmp2 #= Bs[I+1] + Tmp,
+    mod(Tmp2, 0x100000000, Bs[I+2]),
   end,
 
   Accs = [A1,B1,C1,D1],
@@ -247,8 +195,7 @@ md5(S, L, Result) =>
       %println(ij_ok=(I,J)),
       % (to_fstring("%02x", (Acc >> (I*8)) /\ 0xff))
     end,
-  end,
-  Result #= R.
+  end.
 
 updateF(F, A, K, S, I, F2) =>
   Base #= I*4 + 1,
