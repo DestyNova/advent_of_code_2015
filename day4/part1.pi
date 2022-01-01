@@ -38,7 +38,7 @@ go(S,N) =>
   R[2] #= 0x00,
   R[3] #<= 0x0f,
 
-  solve([$min(N),$report(printf("Vars=%w  N=%w%n", Vars, N)),split],Vars),
+  solve([$min(N),$report(printf("Vars=%w  N=%w%n", Vars, N)),ff,split,updown],Vars),
   println(r=R),
   println(vars=Vars).
 
