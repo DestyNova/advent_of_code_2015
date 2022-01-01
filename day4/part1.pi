@@ -1,4 +1,4 @@
-import sat.
+import cp.
 import util.
 
 main => go.
@@ -9,7 +9,7 @@ go =>
 
 go(S,N) =>
   % find the lowest positive integer K such that md5(S + to_string(K)) starts with 00000...
-  Vars = [A,B,C,D,E,F,G],
+  Vars = [A,B,C,D,E,F],
   Vars :: 0..9,
   A #>= 1,
 
@@ -30,7 +30,7 @@ go(S,N) =>
   end,
 
   % calculate numeric value so we can minimise it
-  N #= A*10**6 + B*10**5 + C*10**4 + D*10**3 + E*10**2 + F*10**1 + G,
+  N #= A*10**5 + B*10**4 + C*10**3 + D*10**2 + E*10**1 + F*10**0, % + G,
 
   md5(S_buf, S_len + Vars.length(), R),
   % afterwards, first 5 characters of hash in hex format should be zeroes
@@ -38,7 +38,7 @@ go(S,N) =>
   R[2] #= 0x00,
   R[3] #<= 0x0f,
 
-  solve([$min(N),$report(printf("Vars=%w  N=%w%n", Vars, N))],Vars),
+  solve([$min(N),$report(printf("Vars=%w  N=%w%n", Vars, N)),split],Vars),
   println(r=R),
   println(vars=Vars).
 
