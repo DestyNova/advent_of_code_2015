@@ -1,3 +1,6 @@
+% Advent of Code 2015 day 4: find the lowest positive integer N such that md5(S ++ to_string(N)) starts with:
+% 00000 (part 1), 000000 (part 2)
+
 import cp.
 import util.
 
@@ -8,7 +11,6 @@ go =>
   println(R).
 
 go(S,N) =>
-  % find the lowest positive integer K such that md5(S + to_string(K)) starts with 00000...
   Vars = [A,B,C,D,E,F],
   Vars :: 0..9,
   A #>= 1,
