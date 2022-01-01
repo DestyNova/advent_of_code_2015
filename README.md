@@ -34,3 +34,4 @@ SUM:                            11             59              0            138
 * Day 1: [Not Quite Lisp](https://github.com/DestyNova/advent_of_code_2015/blob/main/day1/retro.md)
 * Day 2: [I Was Told There Would Be No Math](https://github.com/DestyNova/advent_of_code_2015/blob/main/day2/retro.md)
 * Day 3: [Perfectly Spherical Houses in a Vacuum](https://github.com/DestyNova/advent_of_code_2015/blob/main/day3/retro.md)
+* Day 4: [The Ideal Stocking Stuffer](https://github.com/DestyNova/advent_of_code_2015/blob/main/day4/retro.md)

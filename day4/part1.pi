@@ -1,63 +1,46 @@
 import sat.
 import util.
-import bitwise.
 
 main => go.
 
 go => 
-  % R = solve(read_line()),
-  go("a", R), % 0cc175b9c0f1b6a831c399e269772661
+  go(read_line(), R),
   println(R).
 
 go(S,N) =>
   % find the lowest positive integer K such that md5(S + to_string(K)) starts with 00000...
-  Vars = [A,B,C,D,E,F,G,H],
+  Vars = [A,B,C,D,E,F,G],
   Vars :: 0..9,
   A #>= 1,
 
   % convert to list of character codes (assuming ASCII, would be better to operate directly on byte values)
   S_ord = [ord(Char) : Char in S],
   S_len = S.length(),
-  S_buf = new_list(64), % not sure how much space we actually need, experiment later
+  S_buf = new_list(64), % message fits in one 64-byte chunk
   S_buf :: 0..255,
 
   % "copy" input array into buffer
   foreach(I in 1..S_len)
     S_buf[I] #= S_ord[I]
   end,
-
+  
   % input should be followed by the character codes for the number to be minimised
-  foreach(I in 1..8)
+  foreach(I in 1..Vars.length())
     S_buf[I + S_len] #= Vars[I] + 48
   end,
-  println(s_buf=S_buf),
 
-  % calculate actual numeric value so we can minimise it
-  N #= A*10**7 + B*10**6 + C*10**5 + D*10**4 + E*10**3 + F*10**2 + G*10**1 + H,
-  % printf("S: %w, S_buf: %w\n", S, S_buf),
+  % calculate numeric value so we can minimise it
+  N #= A*10**6 + B*10**5 + C*10**4 + D*10**3 + E*10**2 + F*10**1 + G,
 
-  % describe MD5 in constraints, with S_len+8 to indicate the message size after appending a number
-  % TODO: make it work first for concrete input, then reintroduce the S_buf version with constrained vars?
-  % Test_list = new_list(64),
-  % Test_list[1] = ord('a'),
-  % % foreach(I in 2..9)
-  % %   Test_list[I] = 0
-  % % end,
-  % % md5(Test_list, 9, R0),
-  % md5(Test_list, 1, R0),
-  % println(flatten([to_fstring("%02x", Byte) : Byte in R0])),
-  % crash(),
-  md5(S_buf, S_len + 8, R),
-  % afterwards, first 5 characters of hash should be a zero char (ASCII 48)
-  foreach(I in 1..1)
-    R[I] #= 48
-  end,
+  md5(S_buf, S_len + Vars.length(), R),
+  % afterwards, first 5 characters of hash in hex format should be zeroes
+  R[1] #= 0x00,
+  R[2] #= 0x00,
+  R[3] #<= 0x0f,
 
-  solve([$report(printf("Vars=%w  N=%w%n", Vars, N))],Vars),
+  solve([$min(N),$report(printf("Vars=%w  N=%w%n", Vars, N))],Vars),
   println(r=R),
-  % println(s_buf=S_buf),
   println(vars=Vars).
-%solve([$min(N),ff,split,$report(printf("Vars=%w  N=%w%n", Vars, N))],Vars).
 
 md5(S, L, R) =>
   % Adapted from pseudocode here: https://en.wikipedia.org/wiki/MD5#Algorithm
@@ -86,8 +69,6 @@ md5(S, L, R) =>
         0xf7537e82, 0xbd3af235, 0x2ad7d2bb, 0xeb86d391],
 
   % 32-bit accumulators
-  Accumulators = [A0,B0,C0,D0],
-  Accumulators :: 0..0xffffffff,
   A0 #= 0x67452301,
   B0 #= 0xefcdab89,
   C0 #= 0x98badcfe,
@@ -96,7 +77,7 @@ md5(S, L, R) =>
   % pad the message
   S[L+1] #= 0x80,
   Padding_amount #= 56 - L - 1,
-  %println(padding_amount=Padding_amount),
+
   foreach(I in 1..Padding_amount)
     S[L+1+I] #= 0
   end,
@@ -111,12 +92,9 @@ md5(S, L, R) =>
   S[L2+6] #= 0,
   S[L2+7] #= 0,
   S[L2+8] #= 0,
-  %printf("L: %w, L2: %w, S: %w\n", L, L2, S),
 
   % process full messages in 512-bit (64 byte) chunks, but we only have one
   % then break each 64-byte chunk into 16 4-byte chunks
-  % M_chunks #= chunks_of(S, 4),
-  % M #= [bin_to_int(T) : T in M_chunks],
 
   % Accumulator values for each of 64 iterations + initial value
   As = new_list(65),
@@ -153,7 +131,7 @@ md5(S, L, R) =>
       xor32(Bs[I+1], xor32(Cs[I+1],Ds[I+1]), F1s[I+1]),
       Gs[I+1] #= (3*I + 5) mod 16
     else
-      % I think we need to break these up to deal with not32 confusing the domain inference
+      % I think we need to break these up to deal with not32 confusing domain inference (negative numbers)
       not32(Ds[I+1], T1),
       T2 :: 0..0x100000000,
       or32(Bs[I+1], T1, T2),
@@ -162,7 +140,6 @@ md5(S, L, R) =>
       Gs[I+1] #= (7*I) mod 16,
     end,
     updateF(F1s[I+1], As[I+1], K[I+1], S, Gs[I+1], F2s[I+1]),
-    % println(f2b=F2s[I+1]),
 
     % update accumulators for next round
     % A := D,
@@ -173,14 +150,13 @@ md5(S, L, R) =>
     Cs[I+2] #= Bs[I+1],
 
     Sw = Shifts[I+1],
-    % mod(Bs[I+1] + or32(shift_left32(F2s[I+1], Sw), shift_right32(F2s[I+1], 32-Sw)), 0x100000000, Bs[I+2]),
     or32(shift_left32(F2s[I+1], Sw), shift_right32(F2s[I+1], 32-Sw), Tmp),
     Tmp2 #= Bs[I+1] + Tmp,
     mod(Tmp2, 0x100000000, Bs[I+2]),
   end,
 
   Accs = [A1,B1,C1,D1],
-  Accs :: 0..0x100000000,
+  Accs :: 0..0xffffffff,
   A1 #= (A0 + As[65]) mod 0x100000000,
   B1 #= (B0 + Bs[65]) mod 0x100000000,
   C1 #= (C0 + Cs[65]) mod 0x100000000,
@@ -190,10 +166,7 @@ md5(S, L, R) =>
 
   foreach(J in 0..3)
     foreach(I in 0..3)
-      %println(ij=(I,J)),
       mod(shift_right32(Accs[J+1], I*8), 256, R[J*4 + (I+1)]),
-      %println(ij_ok=(I,J)),
-      % (to_fstring("%02x", (Acc >> (I*8)) /\ 0xff))
     end,
   end.
 
@@ -207,14 +180,8 @@ updateF(F, A, K, S, I, F2) =>
   mod(T5, 0x100000000, F2).
   
 getM(S,I) = Z =>
-  %println("in getM"),
   Base #= (I-1)*4 + 1,
-  %println(m=S),
   Z #= S[Base] * 256**3 + S[Base + 1] * 256**2 + S[Base + 2] * 256**1 + S[Base + 3].
-
-
-% bin_to_int([C1,C2,C3,C4]) = ord(C4)*(256**3) + ord(C3)*(256**2) + ord(C2)*(256**1) + ord(C1).
-% int_to_bin32(X) = [chr((X >> S) /\ 0xff) : S in [0,8,16,24]]
 
 shift_left32(A,B) = R =>
   R #= A * 2**B.

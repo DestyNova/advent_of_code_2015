@@ -2,13 +2,21 @@ import cp.
 import util.
 
 main =>
-  % R = solve(read_line()),
-  R = solve("arr"), % 0cc175b9c0f1b6a831c399e269772661
+  R = solve(read_line()),
   println(R).
 
 solve(S) = X =>
   % find the lowest positive integer K such that md5(S + to_string(K)) starts with 00000...
-  X = md5(S).
+  foreach(I in 1..99999999)
+    X = md5(S ++ to_string(I)),
+    % if("00000" == take(X, 5)) then % part 1
+    if("000000" == take(X, 6)) then % part 2
+      println(match=I),
+      exit()
+    elseif I mod 10000 == 0 then
+      garbage_collect(),
+      println(I)
+    end.
 
 md5(S) = X =>
   % Adapted from pseudocode here: https://en.wikipedia.org/wiki/MD5#Algorithm
