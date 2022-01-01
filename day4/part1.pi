@@ -1,7 +1,10 @@
 import cp.
 import util.
+import bitwise.
 
-main =>
+main => go.
+
+go => 
   % R = solve(read_line()),
   go("a", R), % 0cc175b9c0f1b6a831c399e269772661
   println(R).
@@ -10,118 +13,384 @@ go(S,N) =>
   % find the lowest positive integer K such that md5(S + to_string(K)) starts with 00000...
   Vars = [A,B,C,D,E,F,G,H],
   Vars :: 0..9,
-  A #> 0,
+  A #>= 1,
 
-  X #= to_string(A*10**7 + B*10**6 + C*10**5 + D*10**4 + E*10**3 + F*10**2 + G*10**1 + H),
-  md5(S ++ X, R),
-  take(R, 5) #= "00000",
-  solve([$min(N)],Vars).
+  % convert to list of character codes (assuming ASCII, would be better to operate directly on byte values)
+  S_ord = [ord(Char) : Char in S],
+  S_len = S.length(),
+  S_buf = new_list(64), % not sure how much space we actually need, experiment later
+  S_buf :: 0..255,
 
-md5(S,Result) =>
+  % "copy" input array into buffer
+  foreach(I in 1..S_len)
+    S_buf[I] #= S_ord[I]
+  end,
+
+  % input should be followed by the character codes for the number to be minimised
+  foreach(I in 1..8)
+    S_buf[I + S_len] #= Vars[I] + 48
+  end,
+
+  % calculate actual numeric value so we can minimise it
+  N #= A*10**7 + B*10**6 + C*10**5 + D*10**4 + E*10**3 + F*10**2 + G*10**1 + H,
+  printf("S: %w, S_buf: %w\n", S, S_buf),
+
+  % describe MD5 in constraints, with S_len+8 to indicate the message size after appending a number
+  % TODO: make it work first for concrete input, then reintroduce the S_buf version with constrained vars?
+  Test_list = new_list(64),
+  Test_list[1] = ord('a'),
+  % foreach(I in 2..9)
+  %   Test_list[I] = 0
+  % end,
+  % md5(Test_list, 9, R0),
+  md5(Test_list, 1, R0),
+  % println(r=R0),
+  % md5(S_buf, S_len + 8, R),
+  println(flatten([to_fstring("%02x", Byte) : Byte in R0])).
+
+  % afterwards, first 5 characters of hash should be a zero char (ASCII 48)
+  % foreach(I in 1..4)
+  %   R[I] #= 48
+  % end,
+
+  % solve([$min(N)],Vars).
+
+% TODO:
+% * Convert all MD5 logic to work on lists of ints, not chars
+% * Actually list logic might not work at all... maybe preallocate an array/list of length 512 bytes
+%   then set constraints on individual elements, e.g. with a foreach
+% * Implement constrained bitwise operations (refer to Hakan K's implementation + Neng-Fa's post)
+%   * Probably needs helpers to convert an int (or list of 4 ints?) to a list of 32 booleans and back
+%   * What about addition? Maybe doesn't need to be efficient, in which case I can just convert back to ints?
+% * Replace all mutating assignments with something else...
+% * Profit?
+
+md5(S, L, Result) =>
   % Adapted from pseudocode here: https://en.wikipedia.org/wiki/MD5#Algorithm
   % Shift table
-  Shifts #= [7, 12, 17, 22,  7, 12, 17, 22,  7, 12, 17, 22,  7, 12, 17, 22,
-            5,  9, 14, 20,  5,  9, 14, 20,  5,  9, 14, 20,  5,  9, 14, 20,
-            4, 11, 16, 23,  4, 11, 16, 23,  4, 11, 16, 23,  4, 11, 16, 23,
-            6, 10, 15, 21,  6, 10, 15, 21,  6, 10, 15, 21,  6, 10, 15, 21],
-  % Sine table
-  K #= [0xd76aa478, 0xe8c7b756, 0x242070db, 0xc1bdceee,
-      0xf57c0faf, 0x4787c62a, 0xa8304613, 0xfd469501,
-      0x698098d8, 0x8b44f7af, 0xffff5bb1, 0x895cd7be,
-      0x6b901122, 0xfd987193, 0xa679438e, 0x49b40821,
-      0xf61e2562, 0xc040b340, 0x265e5a51, 0xe9b6c7aa,
-      0xd62f105d, 0x02441453, 0xd8a1e681, 0xe7d3fbc8,
-      0x21e1cde6, 0xc33707d6, 0xf4d50d87, 0x455a14ed,
-      0xa9e3e905, 0xfcefa3f8, 0x676f02d9, 0x8d2a4c8a,
-      0xfffa3942, 0x8771f681, 0x6d9d6122, 0xfde5380c,
-      0xa4beea44, 0x4bdecfa9, 0xf6bb4b60, 0xbebfbc70,
-      0x289b7ec6, 0xeaa127fa, 0xd4ef3085, 0x04881d05,
-      0xd9d4d039, 0xe6db99e5, 0x1fa27cf8, 0xc4ac5665,
-      0xf4292244, 0x432aff97, 0xab9423a7, 0xfc93a039,
-      0x655b59c3, 0x8f0ccc92, 0xffeff47d, 0x85845dd1,
-      0x6fa87e4f, 0xfe2ce6e0, 0xa3014314, 0x4e0811a1,
-      0xf7537e82, 0xbd3af235, 0x2ad7d2bb, 0xeb86d391],
+  Shifts = [7, 12, 17, 22,  7, 12, 17, 22,  7, 12, 17, 22,  7, 12, 17, 22,
+             5,  9, 14, 20,  5,  9, 14, 20,  5,  9, 14, 20,  5,  9, 14, 20,
+             4, 11, 16, 23,  4, 11, 16, 23,  4, 11, 16, 23,  4, 11, 16, 23,
+             6, 10, 15, 21,  6, 10, 15, 21,  6, 10, 15, 21,  6, 10, 15, 21],
 
+  % Sine table
+  K = [0xd76aa478, 0xe8c7b756, 0x242070db, 0xc1bdceee,
+        0xf57c0faf, 0x4787c62a, 0xa8304613, 0xfd469501,
+        0x698098d8, 0x8b44f7af, 0xffff5bb1, 0x895cd7be,
+        0x6b901122, 0xfd987193, 0xa679438e, 0x49b40821,
+        0xf61e2562, 0xc040b340, 0x265e5a51, 0xe9b6c7aa,
+        0xd62f105d, 0x02441453, 0xd8a1e681, 0xe7d3fbc8,
+        0x21e1cde6, 0xc33707d6, 0xf4d50d87, 0x455a14ed,
+        0xa9e3e905, 0xfcefa3f8, 0x676f02d9, 0x8d2a4c8a,
+        0xfffa3942, 0x8771f681, 0x6d9d6122, 0xfde5380c,
+        0xa4beea44, 0x4bdecfa9, 0xf6bb4b60, 0xbebfbc70,
+        0x289b7ec6, 0xeaa127fa, 0xd4ef3085, 0x04881d05,
+        0xd9d4d039, 0xe6db99e5, 0x1fa27cf8, 0xc4ac5665,
+        0xf4292244, 0x432aff97, 0xab9423a7, 0xfc93a039,
+        0x655b59c3, 0x8f0ccc92, 0xffeff47d, 0x85845dd1,
+        0x6fa87e4f, 0xfe2ce6e0, 0xa3014314, 0x4e0811a1,
+        0xf7537e82, 0xbd3af235, 0x2ad7d2bb, 0xeb86d391],
+
+  % 32-bit accumulators
+  Accumulators = [A0,B0,C0,D0],
+  Accumulators :: 0..0xffffffff,
   A0 #= 0x67452301,
   B0 #= 0xefcdab89,
   C0 #= 0x98badcfe,
   D0 #= 0x10325476,
 
   % pad the message
-  S2 #= S ++ [chr(0x80)],
-  S2_len #= S2.length(),
-  S2_padding_amount #= 56 - S2_len,
-  S2_range #= 1..S2_padding_amount,
-  S3 #= S2 ++ [chr(0) : _ in S2_range],
+  S[L+1] #= 0x80,
+  Padding_amount #= 56 - L - 1,
+  %println(padding_amount=Padding_amount),
+  foreach(I in 1..Padding_amount)
+    S[L+1+I] #= 0
+  end,
+  L2 #= L + 1 + Padding_amount,
 
   % append original message _BIT_ length in 64-bit little-endian binary
-  Binary_len #= int_to_bin32(length(S)*8) ++ [chr(0) : _ in 0..3],
-  S4 #= S3 ++ Binary_len,
+  S[L2+1] #= (L * 8) mod 256,
+  S[L2+2] #= ((L * 8) / 256) mod 256,
+  S[L2+3] #= ((L * 8) / 256**2) mod 256,
+  S[L2+4] #= ((L * 8) / 256**3) mod 256,
+  S[L2+5] #= 0,
+  S[L2+6] #= 0,
+  S[L2+7] #= 0,
+  S[L2+8] #= 0,
+  printf("L: %w, L2: %w, S: %w\n", L, L2, S),
 
-  % process in 512-bit chunks, but we only have one
-  M_chunks #= chunks_of(S4, 4),
-  M #= [bin_to_int(T) : T in M_chunks],
+  % process full messages in 512-bit (64 byte) chunks, but we only have one
+  % then break each 64-byte chunk into 16 4-byte chunks
+  % M_chunks #= chunks_of(S, 4),
+  % M #= [bin_to_int(T) : T in M_chunks],
 
-  A #= A0,
-  B #= B0,
-  C #= C0,
-  D #= D0,
+  % Accumulator values for each of 64 iterations + initial value
+  As = new_list(65),
+  As :: 0..0xffffffff,
+  As[1] #= A0,
+
+  Bs = new_list(65),
+  Bs :: 0..0xffffffff,
+  Bs[1] #= B0,
+
+  Cs = new_list(65),
+  Cs :: 0..0xffffffff,
+  Cs[1] #= C0,
+
+  Ds = new_list(65),
+  Ds :: 0..0xffffffff,
+  Ds[1] #= D0,
+
+  F1s = new_list(64),
+  F1s :: 0..0xffffffff,
+  F2s = new_list(64),
+  F2s :: 0..0xffffffff,
+  Gs = new_list(64),
+  Gs :: 0..15,
 
   foreach(I in 0..63)
+    %println(inner=I),
     % cond 1
-    printf("OK 0, %w\n", C),
-    F1_l #= B /\ C,
-    F1_r #= ((~B) /\ D),
-    F1 #= F1_l \/ F1_r,
+    % F1s[I+1] #= (B /\ C) \/ ((~B) /\ D),
+
+    % TODO: pick up from here... replace M with sliding windows over S?
+    % and fold F expressions back into the uber-cond so there's one F1s[I+1] #= cond(.....)
+    % then implement the bitwise operations as arithmetic. /\ + \/ probably ok, ^ I'm not sure about yet
+    % /\ probably done (unless // is not ok?)
 
     % cond 2
-    F2 #= (D /\ B) \/ ((~D) /\ C),
-    I2 #= (5*I + 1) mod 16,
-    FI2 #= (F2, I2),
+    % F2 #= (D /\ B) \/ ((~D) /\ C),
+    % I2 #= (5*I + 1) mod 16,
+    % FI2 #= (F2, I2),
 
-    % cond 3
-    F3 #= B ^ C ^ D,
-    I3 #= (3*I + 5) mod 16,
-    FI3 #= (F3, I3),
+    % % cond 3
+    % F3 #= B ^ C ^ D,
+    % I3 #= (3*I + 5) mod 16,
+    % FI3 #= (F3, I3),
 
-    % cond 4
-    F4 #= C ^ (B \/ (~D)),
-    I4 #= (7*I) mod 16,
-    FI4 #= (F4, I4),
+    % % cond 4
+    % F4 #= C ^ (B \/ (~D)),
+    % I4 #= (7*I) mod 16,
+    % FI4 #= (F4, I4),
 
-    println("OK 1"),
+    %%println("OK 1"),
     % TODO: Actually not okay -- Picat's constraint solver doesn't understand bitwise operations: /\ \/ ^
     %F1 #= ((B /\ C) \/ ((~B) /\ D),
-    F #= cond(I #=< 15, F1,
-              cond(I #=< 31, F2,
-                cond(I #=< 47, F3, F4))),
+    % F1s[I+1] #= cond(I #=< 15, F1,
+    %               cond(I #=< 31, F2,
+    %                 cond(I #=< 47, F3, F4))),
+    % %println(wat=not32(not32(F1s[I+1]))),
+    %%println(f1=F1s[I+1]),
+    % not32(Bs[I+1], F1s[I+1]),
+    if(I =< 15) then
+      or32(and32(Bs[I+1],Cs[I+1]), and32(not32(Bs[I+1]), Ds[I+1]), F1s[I+1]),
+      Gs[I+1] #= I,
+    elseif(I <= 31) then
+      or32(and32(Ds[I+1],Bs[I+1]), and32(not32(Ds[I+1]), Cs[I+1]), F1s[I+1]),
+      Gs[I+1] #= (5*I + 1) mod 16
+    elseif(I <= 47) then
+      xor32(Bs[I+1], xor32(Cs[I+1],Ds[I+1]), F1s[I+1]),
+      Gs[I+1] #= (3*I + 5) mod 16
+    else
+      xor32(Cs[I+1], or32(Bs[I+1], not32(Ds[I+1])), F1s[I+1]),
+      Gs[I+1] #= (7*I) mod 16
+    end,
+    % cond(I #=< 15, or32(and32(B,C), and32(not32(B), D), F1s[I+1]),
+    %   cond(I #=< 31, or32(and32(D,B), and32(not32(D), C)),
+    %     cond(I #=< 47, xor32(B, xor32(C,D)),
+    %       xor32(C, and32(B, not32(D)))))),
 
-    println("OK 2"),
-    G #= cond(I #=< 15, I,
-              cond(I #=< 31, I2,
-                cond(I #=< 47, I3, I4))),
+    % Gs[I+1] #= cond(I #=< 15, I,
+    %             cond(I #=< 31, (5*I + 1) mod 16,
+    %               cond(I #=< 47, (3*I + 5) mod 16, (7*I) mod 16))),
 
-    println("OK 3"),
-    F := (F + A + K[I+1] + M[G+1]) /\ 0xffffffff,
-    A := D,
-    D := C,
-    C := B,
+    %println(i=I),
+    %println(f1=F1s[I+1]),
+    %println(a=As[I+1]),
+    %println(b=Bs[I+1]),
+    %println(c=Cs[I+1]),
+    %println(d=Ds[I+1]),
+    %println(k=K[I+1]),
+    %println(g=Gs[I+1]),
+    % F := (F + A + K[I+1] + M[G+1]) /\ 0xffffffff,
+    updateF(F1s[I+1], As[I+1], K[I+1], S, Gs[I+1], F2s[I+1]),
+    %println(f2b=F2s[I+1]),
+
+    % update accumulators for next round
+    % A := D,
+    As[I+2] #= Ds[I+1],
+    % D := C,
+    Ds[I+2] #= Cs[I+1],
+    % C := B,
+    Cs[I+2] #= Bs[I+1],
+
     Sw = Shifts[I+1],
-    B := (B + ((F << Sw) \/ (F >> (32-Sw)))) /\ 0xffffffff,
+    mod(Bs[I+1] + or32(shift_left32(F2s[I+1], Sw), shift_right32(F2s[I+1], 32-Sw)), 0x100000000, Bs[I+2]),
+    %println(b2=Bs[I+2]),
+    %println("--------"),
+    %if(I == 63) then crash() end
   end,
 
-  A1 #= (A0 + A) /\ 0xffffffff,
-  B1 #= (B0 + B) /\ 0xffffffff,
-  C1 #= (C0 + C) /\ 0xffffffff,
-  D1 #= (D0 + D) /\ 0xffffffff,
+  Accs = [A1,B1,C1,D1],
+  Accs :: 0..0x100000000,
+  A1 #= (A0 + As[65]) mod 0x100000000,
+  B1 #= (B0 + Bs[65]) mod 0x100000000,
+  C1 #= (C0 + Cs[65]) mod 0x100000000,
+  D1 #= (D0 + Ds[65]) mod 0x100000000,
 
-  R #= [],
-  foreach(Acc in [A1,B1,C1,D1])
+  R = new_list(16),
+
+  foreach(J in 0..3)
     foreach(I in 0..3)
-      R := R ++ (to_fstring("%02x", (Acc >> (I*8)) /\ 0xff))
+      %println(ij=(I,J)),
+      mod(shift_right32(Accs[J+1], I*8), 256, R[J*4 + (I+1)]),
+      %println(ij_ok=(I,J)),
+      % (to_fstring("%02x", (Acc >> (I*8)) /\ 0xff))
     end,
   end,
   Result #= R.
 
-bin_to_int([C1,C2,C3,C4]) = ord(C4)*(256**3) + ord(C3)*(256**2) + ord(C2)*(256**1) + ord(C1).
-int_to_bin32(X) = [chr((X >> S) /\ 0xff) : S in [0,8,16,24]]
+updateF(F, A, K, S, I, F2) =>
+  Base #= I*4 + 1,
+  T1 #= S[Base],
+  T2 #= S[Base+1] * 256,
+  T3 #= S[Base+2] * 256**2,
+  T4 #= S[Base+3] * 256**3,
+  T5 #= F + A + K + T1 + T2 + T3 + T4,
+  mod(T5, 0x100000000, F2).
+  
+getM(S,I) = Z =>
+  %println("in getM"),
+  Base #= (I-1)*4 + 1,
+  %println(m=S),
+  Z #= S[Base] * 256**3 + S[Base + 1] * 256**2 + S[Base + 2] * 256**1 + S[Base + 3].
+
+
+% bin_to_int([C1,C2,C3,C4]) = ord(C4)*(256**3) + ord(C3)*(256**2) + ord(C2)*(256**1) + ord(C1).
+% int_to_bin32(X) = [chr((X >> S) /\ 0xff) : S in [0,8,16,24]]
+
+shift_left32(A,B) = R =>
+  R #= A * 2**B.
+
+shift_right32(A,B,Z) =>
+  Z #= A // 2**B.
+
+shift_right32(A,B) = Z => shift_right32(A,B,Z).
+
+mod(A,B,Z) =>
+  Z #= A mod B.
+
+mod(A,B) = Z => mod(A,B,Z).
+
+not32(A,Z) =>
+  Z #= (0x100000000 - (A+1)) mod 0x100000000.
+
+not32(A) = Z => not32(A,Z).
+
+and32(A,B,Z) =>
+  Z #= (A mod 2) * (B mod 2) +
+      (((A//2) mod 2) * ((B//2) mod 2) * 2) +
+      (((A//4) mod 2) * ((B//4) mod 2) * 4) +
+      (((A//8) mod 2) * ((B//8) mod 2) * 8) +
+      (((A//16) mod 2) * ((B//16) mod 2) * 16) +
+      (((A//32) mod 2) * ((B//32) mod 2) * 32) +
+      (((A//64) mod 2) * ((B//64) mod 2) * 64) +
+      (((A//128) mod 2) * ((B//128) mod 2) * 128) +
+      (((A//256) mod 2) * ((B//256) mod 2) * 256) +
+      (((A//512) mod 2) * ((B//512) mod 2) * 512) +
+      (((A//1024) mod 2) * ((B//1024) mod 2) * 1024) +
+      (((A//2048) mod 2) * ((B//2048) mod 2) * 2048) +
+      (((A//4096) mod 2) * ((B//4096) mod 2) * 4096) +
+      (((A//8192) mod 2) * ((B//8192) mod 2) * 8192) +
+      (((A//16384) mod 2) * ((B//16384) mod 2) * 16384) +
+      (((A//32768) mod 2) * ((B//32768) mod 2) * 32768) +
+      (((A//65536) mod 2) * ((B//65536) mod 2) * 65536) +
+      (((A//131072) mod 2) * ((B//131072) mod 2) * 131072) +
+      (((A//262144) mod 2) * ((B//262144) mod 2) * 262144) +
+      (((A//524288) mod 2) * ((B//524288) mod 2) * 524288) +
+      (((A//1048576) mod 2) * ((B//1048576) mod 2) * 1048576) +
+      (((A//2097152) mod 2) * ((B//2097152) mod 2) * 2097152) +
+      (((A//4194304) mod 2) * ((B//4194304) mod 2) * 4194304) +
+      (((A//8388608) mod 2) * ((B//8388608) mod 2) * 8388608) +
+      (((A//16777216) mod 2) * ((B//16777216) mod 2) * 16777216) +
+      (((A//33554432) mod 2) * ((B//33554432) mod 2) * 33554432) +
+      (((A//67108864) mod 2) * ((B//67108864) mod 2) * 67108864) +
+      (((A//134217728) mod 2) * ((B//134217728) mod 2) * 134217728) +
+      (((A//268435456) mod 2) * ((B//268435456) mod 2) * 268435456) +
+      (((A//536870912) mod 2) * ((B//536870912) mod 2) * 536870912) +
+      (((A//1073741824) mod 2) * ((B//1073741824) mod 2) * 1073741824) +
+      (((A//2147483648) mod 2) * ((B//2147483648) mod 2) * 2147483648).
+
+and32(A,B) = Z => and32(A,B,Z).
+
+or32(A,B,Z) =>
+  Z #= (((A mod 2) + (B mod 2) - (A mod 2)*(B mod 2))) +
+       ((((A//2) mod 2) + ((B//2) mod 2) - ((A//2) mod 2)*((B//2) mod 2)) * 2) +
+       ((((A//4) mod 2) + ((B//4) mod 2) - ((A//4) mod 2)*((B//4) mod 2)) * 4) +
+       ((((A//8) mod 2) + ((B//8) mod 2) - ((A//8) mod 2)*((B//8) mod 2)) * 8) +
+       ((((A//16) mod 2) + ((B//16) mod 2) - ((A//16) mod 2)*((B//16) mod 2)) * 16) +
+       ((((A//32) mod 2) + ((B//32) mod 2) - ((A//32) mod 2)*((B//32) mod 2)) * 32) +
+       ((((A//64) mod 2) + ((B//64) mod 2) - ((A//64) mod 2)*((B//64) mod 2)) * 64) +
+       ((((A//128) mod 2) + ((B//128) mod 2) - ((A//128) mod 2)*((B//128) mod 2)) * 128) +
+       ((((A//256) mod 2) + ((B//256) mod 2) - ((A//256) mod 2)*((B//256) mod 2)) * 256) +
+       ((((A//512) mod 2) + ((B//512) mod 2) - ((A//512) mod 2)*((B//512) mod 2)) * 512) +
+       ((((A//1024) mod 2) + ((B//1024) mod 2) - ((A//1024) mod 2)*((B//1024) mod 2)) * 1024) +
+       ((((A//2048) mod 2) + ((B//2048) mod 2) - ((A//2048) mod 2)*((B//2048) mod 2)) * 2048) +
+       ((((A//4096) mod 2) + ((B//4096) mod 2) - ((A//4096) mod 2)*((B//4096) mod 2)) * 4096) +
+       ((((A//8192) mod 2) + ((B//8192) mod 2) - ((A//8192) mod 2)*((B//8192) mod 2)) * 8192) +
+       ((((A//16384) mod 2) + ((B//16384) mod 2) - ((A//16384) mod 2)*((B//16384) mod 2)) * 16384) +
+       ((((A//32768) mod 2) + ((B//32768) mod 2) - ((A//32768) mod 2)*((B//32768) mod 2)) * 32768) +
+       ((((A//65536) mod 2) + ((B//65536) mod 2) - ((A//65536) mod 2)*((B//65536) mod 2)) * 65536) +
+       ((((A//131072) mod 2) + ((B//131072) mod 2) - ((A//131072) mod 2)*((B//131072) mod 2)) * 131072) +
+       ((((A//262144) mod 2) + ((B//262144) mod 2) - ((A//262144) mod 2)*((B//262144) mod 2)) * 262144) +
+       ((((A//524288) mod 2) + ((B//524288) mod 2) - ((A//524288) mod 2)*((B//524288) mod 2)) * 524288) +
+       ((((A//1048576) mod 2) + ((B//1048576) mod 2) - ((A//1048576) mod 2)*((B//1048576) mod 2)) * 1048576) +
+       ((((A//2097152) mod 2) + ((B//2097152) mod 2) - ((A//2097152) mod 2)*((B//2097152) mod 2)) * 2097152) +
+       ((((A//4194304) mod 2) + ((B//4194304) mod 2) - ((A//4194304) mod 2)*((B//4194304) mod 2)) * 4194304) +
+       ((((A//8388608) mod 2) + ((B//8388608) mod 2) - ((A//8388608) mod 2)*((B//8388608) mod 2)) * 8388608) +
+       ((((A//16777216) mod 2) + ((B//16777216) mod 2) - ((A//16777216) mod 2)*((B//16777216) mod 2)) * 16777216) +
+       ((((A//33554432) mod 2) + ((B//33554432) mod 2) - ((A//33554432) mod 2)*((B//33554432) mod 2)) * 33554432) +
+       ((((A//67108864) mod 2) + ((B//67108864) mod 2) - ((A//67108864) mod 2)*((B//67108864) mod 2)) * 67108864) +
+       ((((A//134217728) mod 2) + ((B//134217728) mod 2) - ((A//134217728) mod 2)*((B//134217728) mod 2)) * 134217728) +
+       ((((A//268435456) mod 2) + ((B//268435456) mod 2) - ((A//268435456) mod 2)*((B//268435456) mod 2)) * 268435456) +
+       ((((A//536870912) mod 2) + ((B//536870912) mod 2) - ((A//536870912) mod 2)*((B//536870912) mod 2)) * 536870912) +
+       ((((A//1073741824) mod 2) + ((B//1073741824) mod 2) - ((A//1073741824) mod 2)*((B//1073741824) mod 2)) * 1073741824) +
+       ((((A//2147483648) mod 2) + ((B//2147483648) mod 2) - ((A//2147483648) mod 2)*((B//2147483648) mod 2)) * 2147483648).
+
+or32(A,B) = Z => or32(A,B,Z).
+
+xor32(A,B,Z) =>
+  Z #= ((A mod 2) - (B mod 2))**2 +
+      (((A//2) mod 2) - ((B//2) mod 2))**2 * 2 +
+      (((A//4) mod 2) - ((B//4) mod 2))**2 * 4 +
+      (((A//8) mod 2) - ((B//8) mod 2))**2 * 8 +
+      (((A//16) mod 2) - ((B//16) mod 2))**2 * 16 +
+      (((A//32) mod 2) - ((B//32) mod 2))**2 * 32 +
+      (((A//64) mod 2) - ((B//64) mod 2))**2 * 64 +
+      (((A//128) mod 2) - ((B//128) mod 2))**2 * 128 +
+      (((A//256) mod 2) - ((B//256) mod 2))**2 * 256 +
+      (((A//512) mod 2) - ((B//512) mod 2))**2 * 512 +
+      (((A//1024) mod 2) - ((B//1024) mod 2))**2 * 1024 +
+      (((A//2048) mod 2) - ((B//2048) mod 2))**2 * 2048 +
+      (((A//4096) mod 2) - ((B//4096) mod 2))**2 * 4096 +
+      (((A//8192) mod 2) - ((B//8192) mod 2))**2 * 8192 +
+      (((A//16384) mod 2) - ((B//16384) mod 2))**2 * 16384 +
+      (((A//32768) mod 2) - ((B//32768) mod 2))**2 * 32768 +
+      (((A//65536) mod 2) - ((B//65536) mod 2))**2 * 65536 +
+      (((A//131072) mod 2) - ((B//131072) mod 2))**2 * 131072 +
+      (((A//262144) mod 2) - ((B//262144) mod 2))**2 * 262144 +
+      (((A//524288) mod 2) - ((B//524288) mod 2))**2 * 524288 +
+      (((A//1048576) mod 2) - ((B//1048576) mod 2))**2 * 1048576 +
+      (((A//2097152) mod 2) - ((B//2097152) mod 2))**2 * 2097152 +
+      (((A//4194304) mod 2) - ((B//4194304) mod 2))**2 * 4194304 +
+      (((A//8388608) mod 2) - ((B//8388608) mod 2))**2 * 8388608 +
+      (((A//16777216) mod 2) - ((B//16777216) mod 2))**2 * 16777216 +
+      (((A//33554432) mod 2) - ((B//33554432) mod 2))**2 * 33554432 +
+      (((A//67108864) mod 2) - ((B//67108864) mod 2))**2 * 67108864 +
+      (((A//134217728) mod 2) - ((B//134217728) mod 2))**2 * 134217728 +
+      (((A//268435456) mod 2) - ((B//268435456) mod 2))**2 * 268435456 +
+      (((A//536870912) mod 2) - ((B//536870912) mod 2))**2 * 536870912 +
+      (((A//1073741824) mod 2) - ((B//1073741824) mod 2))**2 * 1073741824 +
+      (((A//2147483648) mod 2) - ((B//2147483648) mod 2))**2 * 2147483648.
+
+xor32(A,B) = Z => xor32(A,B,Z).

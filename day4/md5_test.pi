@@ -3,7 +3,7 @@ import util.
 
 main =>
   % R = solve(read_line()),
-  R = solve("a"), % 0cc175b9c0f1b6a831c399e269772661
+  R = solve("arr"), % 0cc175b9c0f1b6a831c399e269772661
   println(R).
 
 solve(S) = X =>
@@ -63,12 +63,12 @@ md5(S) = X =>
                 cond(I <= 47, (B ^ C ^ D, (3*I + 5) mod 16),
                               (C ^ (B \/ (~D)), (7*I) mod 16)))),
 
+
     F := (F + A + K[I+1] + M[G+1]) /\ 0xffffffff,
     A := D,
     D := C,
     C := B,
     Sw = Shifts[I+1],
-    %B := (B + ((F << Sw) \/ (F >> (32-Sw)))) /\ 0xffffffff,
     B := (B + ((F << Sw) \/ (F >> (32-Sw)))) /\ 0xffffffff,
   end,
 
