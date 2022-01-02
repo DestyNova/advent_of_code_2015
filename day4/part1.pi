@@ -1,7 +1,7 @@
 % Advent of Code 2015 day 4: find the lowest positive integer N such that md5(S ++ to_string(N)) starts with:
 % 00000 (part 1), 000000 (part 2)
 
-import cp.
+import sat.
 import util.
 
 main => go.
@@ -40,7 +40,7 @@ go(S,N) =>
   R[2] #= 0x00,
   R[3] #<= 0x0f,
 
-  solve([$min(N),$report(printf("Vars=%w  N=%w%n", Vars, N)),ff,split,updown],Vars),
+  solve([$min(N),$report(printf("Vars=%w  N=%w%n", Vars, N))],Vars),
   println(r=R),
   println(vars=Vars).
 
@@ -83,6 +83,7 @@ md5(S, L, R) =>
   foreach(I in 1..Padding_amount)
     S[L+1+I] #= 0
   end,
+  L2 :: 0..64,
   L2 #= L + 1 + Padding_amount,
 
   % append original message _BIT_ length in 64-bit little-endian binary
@@ -135,8 +136,9 @@ md5(S, L, R) =>
     else
       % I think we need to break these up to deal with not32 confusing domain inference (negative numbers)
       not32(Ds[I+1], T1),
-      T2 :: 0..0x100000000,
+      T2 :: 0..0xffffffff,
       or32(Bs[I+1], T1, T2),
+      T3 :: 0..0xffffffff,
       mod(T2,0x100000000,T3),
       xor32(Cs[I+1], T3, F1s[I+1]),
       Gs[I+1] #= (7*I) mod 16,
@@ -152,9 +154,11 @@ md5(S, L, R) =>
     Cs[I+2] #= Bs[I+1],
 
     Sw = Shifts[I+1],
+    Tmp :: 0..0xffffffff,
     or32(shift_left32(F2s[I+1], Sw), shift_right32(F2s[I+1], 32-Sw), Tmp),
-    Tmp2 #= Bs[I+1] + Tmp,
-    mod(Tmp2, 0x100000000, Bs[I+2]),
+    Tmp2 :: 0..0xffffffff,
+    Bs[I+2] #= (Bs[I+1] + Tmp) mod 0x100000000,
+    % mod(Tmp2, 0x100000000, Bs[I+2]),
   end,
 
   Accs = [A1,B1,C1,D1],
@@ -173,6 +177,7 @@ md5(S, L, R) =>
   end.
 
 updateF(F, A, K, S, I, F2) =>
+  Base :: 1..256,
   Base #= I*4 + 1,
   T1 #= S[Base],
   T2 #= S[Base+1] * 256,
@@ -182,28 +187,35 @@ updateF(F, A, K, S, I, F2) =>
   mod(T5, 0x100000000, F2).
   
 getM(S,I) = Z =>
+  Base :: 1..256,
   Base #= (I-1)*4 + 1,
+  Z :: 0..0xffffffff,
   Z #= S[Base] * 256**3 + S[Base + 1] * 256**2 + S[Base + 2] * 256**1 + S[Base + 3].
 
-shift_left32(A,B) = R =>
-  R #= A * 2**B.
+shift_left32(A,B) = Z =>
+  Z :: 0..0xffffffff,
+  Z #= (A * 2**B) mod 0x100000000.
 
 shift_right32(A,B,Z) =>
+  Z :: 0..0xffffffff,
   Z #= A // 2**B.
 
 shift_right32(A,B) = Z => shift_right32(A,B,Z).
 
 mod(A,B,Z) =>
+  Z :: 0..0xffffffff,
   Z #= A mod B.
 
 mod(A,B) = Z => mod(A,B,Z).
 
 not32(A,Z) =>
+  Z :: 0..0xffffffff,
   Z #= (0x100000000 - (A+1)) mod 0x100000000.
 
 not32(A) = Z => not32(A,Z).
 
 and32(A,B,Z) =>
+  Z :: 0..0xffffffff,
   Z #= (A mod 2) * (B mod 2) +
       (((A//2) mod 2) * ((B//2) mod 2) * 2) +
       (((A//4) mod 2) * ((B//4) mod 2) * 4) +
@@ -276,6 +288,7 @@ or32(A,B,Z) =>
 or32(A,B) = Z => or32(A,B,Z).
 
 xor32(A,B,Z) =>
+  Z :: 0..0xffffffff,
   Z #= ((A mod 2) - (B mod 2))**2 +
       (((A//2) mod 2) - ((B//2) mod 2))**2 * 2 +
       (((A//4) mod 2) - ((B//4) mod 2))**2 * 4 +
