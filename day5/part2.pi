@@ -1,0 +1,18 @@
+import util.
+
+main =>
+  R = solve(read_file_lines(), 0),
+  println(R).
+
+solve([], C) = C.
+solve([X|XS], C) = R =>
+  P1 = has_non_overlapping_pair(X),
+  P2 = has_sandwich(X),
+  R = solve(XS, cond((P1 && P2), C+1, C)).
+
+has_non_overlapping_pair([X|[Y|XS]]) = cond(find(XS, [X,Y], _, _), true, has_non_overlapping_pair([Y|XS])).
+has_non_overlapping_pair(_) = false.
+
+has_sandwich([A|[B|[A|XS]]]) = true.
+has_sandwich([X|XS]) = has_sandwich(XS).
+has_sandwich(_) = false.

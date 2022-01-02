@@ -15,18 +15,16 @@ I'd recommend the Advent of Code to anyone -- they're really fun and interesting
 ## Current code stats with [cloc](https://github.com/AlDanial/cloc)
 
 ```
--------------------------------------------------------------------------------
 
-github.com/AlDanial/cloc v 1.86  T=0.02 s (1034.4 files/s, 46482.7 lines/s)
+github.com/AlDanial/cloc v 1.86  T=0.02 s (1036.6 files/s, 43753.7 lines/s)
 -------------------------------------------------------------------------------
 Language                     files          blank        comment           code
 -------------------------------------------------------------------------------
-Prolog                           8             74             31            395
-Markdown                         5             64              0            111
+Prolog                          10             83             31            424
+Markdown                         6             79              0            141
 Bourne Shell                     3             12              2             30
 -------------------------------------------------------------------------------
-SUM:                            16            150             33            536
--------------------------------------------------------------------------------
+SUM:                            19            174             33            595
 -------------------------------------------------------------------------------
 ```
 
@@ -36,3 +34,4 @@ SUM:                            16            150             33            536
 * Day 2: [I Was Told There Would Be No Math](https://github.com/DestyNova/advent_of_code_2015/blob/main/day2/retro.md)
 * Day 3: [Perfectly Spherical Houses in a Vacuum](https://github.com/DestyNova/advent_of_code_2015/blob/main/day3/retro.md)
 * Day 4: [The Ideal Stocking Stuffer](https://github.com/DestyNova/advent_of_code_2015/blob/main/day4/retro.md)
+* Day 5: [Doesn't He Have Intern-Elves For This?](https://github.com/DestyNova/advent_of_code_2015/blob/main/day5/retro.md)

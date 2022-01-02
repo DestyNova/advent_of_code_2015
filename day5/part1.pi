@@ -1,0 +1,20 @@
+import util.
+
+main =>
+  R = solve(read_file_lines(), 0),
+  println(R).
+
+solve([], C) = C.
+solve([X|XS], C) = R =>
+  P1 = has_3_vowels(X),
+  P2 = has_run(X),
+  P3 = no_bad_combos(X),
+  R = solve(XS, cond((P1 && P2 && P3), C+1, C)).
+
+has_3_vowels(X) = length(findall(Y, (member(Y, "aeiou") && member(Y, X)))) >= 3.
+
+has_run([A|[A|XS]]) = true.
+has_run([A|XS]) = has_run(XS).
+has_run(_) = false.
+
+no_bad_combos(X) = [S : S in ["ab","cd","pq","xy"], find(X, S, _, _)] == [].
