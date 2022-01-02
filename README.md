@@ -6,7 +6,7 @@ I didn't solve these puzzles in 2015 so am in no rush to complete them every day
 
 I'd recommend the Advent of Code to anyone -- they're really fun and interesting puzzles, and I've learned a lot from doing them.
 
-# Previous events
+# Other years
 
 * [2019](https://github.com/DestyNova/advent_of_code_2019) (unfinished, will resume later...)
 * [2020](https://github.com/DestyNova/advent_of_code_2020) (mostly Haskell, one or two in Rust, Python and zz)
@@ -17,15 +17,16 @@ I'd recommend the Advent of Code to anyone -- they're really fun and interesting
 ```
 -------------------------------------------------------------------------------
 
-github.com/AlDanial/cloc v 1.86  T=0.01 s (976.0 files/s, 17480.0 lines/s)
+github.com/AlDanial/cloc v 1.86  T=0.02 s (1034.4 files/s, 46482.7 lines/s)
 -------------------------------------------------------------------------------
 Language                     files          blank        comment           code
 -------------------------------------------------------------------------------
-Markdown                         4             43              0             75
-Prolog                           6             16              0             61
-Bourne Shell                     1              0              0              2
+Prolog                           8             74             31            395
+Markdown                         5             64              0            111
+Bourne Shell                     3             12              2             30
 -------------------------------------------------------------------------------
-SUM:                            11             59              0            138
+SUM:                            16            150             33            536
+-------------------------------------------------------------------------------
 -------------------------------------------------------------------------------
 ```
 
