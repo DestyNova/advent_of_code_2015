@@ -35,3 +35,4 @@ SUM:                            19            174             33            595
 * Day 3: [Perfectly Spherical Houses in a Vacuum](https://github.com/DestyNova/advent_of_code_2015/blob/main/day3/retro.md)
 * Day 4: [The Ideal Stocking Stuffer](https://github.com/DestyNova/advent_of_code_2015/blob/main/day4/retro.md)
 * Day 5: [Doesn't He Have Intern-Elves For This?](https://github.com/DestyNova/advent_of_code_2015/blob/main/day5/retro.md)
+* Day 6: [Probably a Fire Hazard](https://github.com/DestyNova/advent_of_code_2015/blob/main/day6/retro.md)
