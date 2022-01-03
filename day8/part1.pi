@@ -1,0 +1,13 @@
+import util.
+
+main =>
+  R = solve(read_file_lines(), 0, 0),
+  println(R).
+
+solve([], C, L) = (C,L,C - L).
+solve([[]|XS], C, L) = solve(XS,C,L).
+solve([['"'|X]|XS], C, L) = solve([X|XS],C+1,L).
+solve([['\\'|['\"'|X]] | XS], C, L) = solve([X|XS],C+2,L+1).
+solve([['\\'|['\\'|X]] | XS], C, L) = solve([X|XS],C+2,L+1).
+solve([['\\'|['x'|[_|[_|X]]]] | XS], C, L) = solve([X|XS],C+4,L+1).
+solve([[_|X]|XS], C, L) = solve([X|XS],C+1,L+1).
