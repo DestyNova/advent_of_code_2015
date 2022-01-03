@@ -1,0 +1,59 @@
+import util.
+
+main => go.
+
+go => 
+  go(read_file_lines(), R),
+  println(R).
+
+go(XS,N) =>
+  Wires = new_set(),
+
+  foreach(Line in XS)
+    % println(line=Line),
+    (Op,A,B,To) = parse_line(Line),
+    % println(lines=(Op,A,B,To)),
+    if(Op == const) then
+      Wires.put("V_" ++ To),
+      printf("V_%w #= %w,\n", To, A)
+    elseif(Op == op_and) then
+      Wires.put("V_" ++ To),
+      printf("and16(%w,%w,V_%w),\n", term_or_num(A), term_or_num(B), To)
+    elseif(Op == op_or) then
+      Wires.put("V_" ++ To),
+      printf("or16(V_%w,V_%w,V_%w),\n", A, B, To)
+    elseif(Op == op_lshift) then
+      Wires.put("V_" ++ To),
+      printf("shift_left16(V_%w,%w,V_%w),\n", A, B, To)
+    elseif(Op == op_rshift) then
+      Wires.put("V_" ++ To),
+      printf("shift_right16(V_%w,%w,V_%w),\n", A, B, To)
+    elseif(Op == op_not) then
+      Wires.put("V_" ++ To),
+      printf("not16(V_%w,V_%w),\n", A, To)
+    elseif(Op == op_ident) then
+      Wires.put("V_" ++ To),
+      printf("V_%w #= V_%w,\n", To, A)
+    end,
+  end,
+
+  printf("Vars = %w,\nVars :: 0..65535,\n", Wires.keys()),
+  N = 0.
+
+term_or_num(N) = Z =>
+  X = parse_term(N),
+  Z = cond(number(X), X, "V_" ++ N).
+
+parse_line(S) = parse_chunks(split(S)).
+
+parse_chunks([A,"AND",B,"->",To]) = (op_and,A,B,To).
+parse_chunks([A,"OR",B,"->",To]) = (op_or,A,B,To).
+parse_chunks([A,"LSHIFT",B,"->",To]) = (op_lshift,A,to_number(B),To).
+parse_chunks([A,"RSHIFT",B,"->",To]) = (op_rshift,A,to_number(B),To).
+parse_chunks(["NOT",A,"->",To]) = (op_not,A,0,To).
+parse_chunks([A,"->",To]) = Z =>
+  X = parse_term(A),
+  Z = cond(number(X), (const,X,0,To),
+                      (op_ident,A,0,To)).
+parse_chunks(X) = error(bad_args,parse_chunks,X).
+
