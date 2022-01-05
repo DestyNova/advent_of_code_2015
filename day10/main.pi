@@ -1,0 +1,15 @@
+import util.
+
+main =>
+  % R = solve(read_line(), 40), % part 1
+  R = solve(read_line(), 50), % part 2
+  println(R).
+
+solve(L, 0) = length(L).
+solve(L, N) = R =>
+  R = solve(iter(L), N-1).
+
+iter("") = "".
+iter([A|[A|[A|Xs]]]) = ['3' | [A | iter(Xs)]].
+iter([A|[A|Xs]]) = ['2' | [A | iter(Xs)]].
+iter([A|Xs]) = ['1' | [A | iter(Xs)]].
