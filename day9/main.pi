@@ -1,0 +1,70 @@
+import cp.
+import util.
+
+main =>
+  (Vs_s,Es) = parse_input(read_file_lines(), new_set(), new_map()),
+  Vs = Vs_s.keys(),
+
+  V_ids = new_map(),
+  L = Vs.length(),
+  foreach(I in 1..L)
+    V_ids.put(Vs[I], I)
+  end,
+
+  E_table = new_array(L*L),
+  foreach(J in 1..L)
+    foreach(I in 1..L)
+      D = Es.get({Vs[I],Vs[J]}, Es.get({Vs[J],Vs[I]}, 0)),
+      % Can't index into a 2D array with element(...) and domain variables, so pack into 1D
+      E_table[(J-1)*L + I] = D,
+    end,
+  end,
+
+  solve(Vs, V_ids, E_table, R),
+  println(R).
+
+solve(Vs, V_ids, Es, R) =>
+  L = Vs.length(),
+  Vars = new_list(L),
+  Vars :: 1..L,
+
+  all_different(Vars),
+
+  Costs = new_array(L),
+  Costs :: 0..65535,
+
+  Costs[L] #= 0,
+  foreach(I in 1..L-1)
+    Costs[I] #> 0,
+    % Map the from/to indices to a 1D index
+    From_i #= (Vars[I]-1)*L,
+    To_i #= Vars[I+1],
+    E #= From_i + To_i,
+    element(E, Es, Costs[I]),
+  end,
+
+  TotalCost #= sum(Costs),
+
+  % solve([$min(TotalCost),ff,split], Vars), % part 1
+  solve([$max(TotalCost),ff,split], Vars), % part 2
+
+  println(vars=Vars),
+  println(costs=Costs),
+
+  foreach(I in 1..L-1)
+    A = Vars[I],
+    B = Vars[I+1],
+    D = Es[(A-1)*L + B],
+    printf("%w -> %w = %w\n", Vs[A], Vs[B], D)
+  end,
+
+  R = TotalCost.
+
+parse_input([], Vs, Es) = (Vs,Es).
+
+parse_input([X|Xs], Vs, Es) = R =>
+  Ts = split(X),
+  Vs.put(Ts[1]),
+  Vs.put(Ts[3]),
+  Es.put({Ts[1],Ts[3]},to_int(Ts[5])),
+  R = parse_input(Xs, Vs, Es).
