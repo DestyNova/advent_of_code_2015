@@ -1,0 +1,41 @@
+import cp.
+
+main =>
+  % Inp = conv_input("vzbxkghb"), % part 1
+  Inp = conv_input("vzbxxyzz"),   % part 2
+  Vars = [A,B,C,D,E,F,G,H],
+  Vars :: 1..26,
+
+  Total #= A*26**7 + B*26**6 + C*26**5 + D*26**4 + E*26**3 + F*26**2 + G*26**1 + H,
+  Total #> Inp,
+
+  % Must have at least one incrementing run
+  Runs = new_list(6),
+  foreach(I in 1..6)
+    Runs[I] #= cond(Vars[I]+1 #= Vars[I+1] #/\ Vars[I+1]+1 #= Vars[I+2], 1, 0)
+  end,
+  sum(Runs) #> 0,
+
+  % no i/o/l
+  Vars notin [9,12,15],
+%
+  % at least 2 different non-overlapping pairs
+  Pairs = new_list(7),
+  foreach(I in 1..7)
+    Pairs[I] #= cond(Vars[I] #= Vars[I+1], 1, 0)
+  end,
+  Sum_pairs = new_list(7),
+  Sum_pairs[7] = Pairs[7],
+  foreach(I in 6..-1..1)
+    Sum_pairs[I] #= Sum_pairs[I+1] + Pairs[I],
+  end,
+  (Pairs[1] #= 1 #/\ (Sum_pairs[3] #> 0)) #\/ (Pairs[2] #= 1 #/\ (Sum_pairs[4] #> 0)) #\/ (Pairs[3] #= 1 #/\ (Sum_pairs[5] #> 0)) #\/ (Pairs[4] #= 1 #/\ (Sum_pairs[6] #> 0)) #\/ (Pairs[5] #= 1 #/\ (Sum_pairs[7] #> 0)),
+
+  solve([$min(Total)], Vars),
+  println(deconv(Vars)).
+
+conv_input(Xs) = conv(Xs, 0).
+conv([], T) = T.
+conv([X|Xs], T) = conv(Xs, 26*T + ord(X) + 1 - ord('a')).
+
+deconv(Ns) = [chr(N - 1 + ord('a')) : N in Ns].

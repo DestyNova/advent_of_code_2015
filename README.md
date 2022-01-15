@@ -15,15 +15,15 @@ I'd recommend the Advent of Code to anyone -- they're really fun and interesting
 ## Current code stats with [cloc](https://github.com/AlDanial/cloc)
 
 ```
-github.com/AlDanial/cloc v 1.86  T=0.03 s (1306.5 files/s, 80732.8 lines/s)
+github.com/AlDanial/cloc v 1.86  T=0.02 s (2320.8 files/s, 139569.5 lines/s)
 -------------------------------------------------------------------------------
 Language                     files          blank        comment           code
 -------------------------------------------------------------------------------
-Prolog                          20            171             45           1477
-Markdown                        11            136              0            227
+Prolog                          21            178             50           1506
+Markdown                        12            146              0            240
 Bourne Shell                     3             12              2             31
 -------------------------------------------------------------------------------
-SUM:                            34            319             47           1735
+SUM:                            36            336             52           1777
 -------------------------------------------------------------------------------
 ```
 
@@ -39,3 +39,4 @@ SUM:                            34            319             47           1735
 * Day 8: [Matchsticks](https://github.com/DestyNova/advent_of_code_2015/blob/main/day8/retro.md)
 * Day 9: [All in a Single Night](https://github.com/DestyNova/advent_of_code_2015/blob/main/day9/retro.md)
 * Day 10: [Elves Look, Elves Say](https://github.com/DestyNova/advent_of_code_2015/blob/main/day10/retro.md)
+* Day 11: [Corporate Policy](https://github.com/DestyNova/advent_of_code_2015/blob/main/day11/retro.md)
