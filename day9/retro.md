@@ -1,5 +1,5 @@
 # Day 9: [All in a Single Night](https://adventofcode.com/2015/day/9)
-*Picat: [Both parts](https://github.com/DestyNova/advent_of_code_2015/blob/main/day9/main.pi) (only one line change)
+*Picat: [Both parts](https://github.com/DestyNova/advent_of_code_2015/blob/main/day9/main.pi) (only one line change)*
 
 A neat variation on the Hamiltonian circuit problem, where we don't care about the start and end points.
 

@@ -1,5 +1,5 @@
 # Day 2: [I Was Told There Would Be No Math](https://adventofcode.com/2015/day/2)
-*Picat: [Part 1](https://github.com/DestyNova/advent_of_code_2015/blob/main/day2/part1.pi), [Part 2](https://github.com/DestyNova/advent_of_code_2015/blob/main/day2/part2.pi)
+*Picat: [Part 1](https://github.com/DestyNova/advent_of_code_2015/blob/main/day2/part1.pi), [Part 2](https://github.com/DestyNova/advent_of_code_2015/blob/main/day2/part2.pi)*
 
 Another easy warmup puzzle.
 

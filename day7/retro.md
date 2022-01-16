@@ -1,5 +1,5 @@
 # Day 7: [Some Assembly Required](https://adventofcode.com/2015/day/7)
-*Picat: [Part 1](https://github.com/DestyNova/advent_of_code_2015/blob/main/day7/part1.pi), [Part 2](https://github.com/DestyNova/advent_of_code_2015/blob/main/day7/part2.pi)
+*Picat: [Part 1](https://github.com/DestyNova/advent_of_code_2015/blob/main/day7/part1.pi), [Part 2](https://github.com/DestyNova/advent_of_code_2015/blob/main/day7/part2.pi)*
 
 This was a pretty fun puzzle that came down to resolving a tree of computations that were defined out-of-order.
 

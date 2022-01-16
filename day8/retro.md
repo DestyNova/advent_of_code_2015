@@ -1,5 +1,5 @@
 # Day 8: [Matchsticks](https://adventofcode.com/2015/day/8)
-*Picat: [Part 1](https://github.com/DestyNova/advent_of_code_2015/blob/main/day8/part1.pi), [Part 2](https://github.com/DestyNova/advent_of_code_2015/blob/main/day8/part2.pi)
+*Picat: [Part 1](https://github.com/DestyNova/advent_of_code_2015/blob/main/day8/part1.pi), [Part 2](https://github.com/DestyNova/advent_of_code_2015/blob/main/day8/part2.pi)*
 
 A simple counting puzzle.
 

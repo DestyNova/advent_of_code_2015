@@ -1,5 +1,5 @@
 # Day 4: [The Ideal Stocking Stuffer](https://adventofcode.com/2015/day/4)
-*Picat: [Part 1](https://github.com/DestyNova/advent_of_code_2015/blob/main/day4/part1.pi), [Part 2](https://github.com/DestyNova/advent_of_code_2015/blob/main/day4/part2.pi)
+*Picat: [Part 1](https://github.com/DestyNova/advent_of_code_2015/blob/main/day4/part1.pi), [Part 2](https://github.com/DestyNova/advent_of_code_2015/blob/main/day4/part2.pi)*
 
 A very easy puzzle that can be brute-forced quickly.
 
