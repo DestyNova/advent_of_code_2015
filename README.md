@@ -40,3 +40,4 @@ SUM:                            36            336             52           1777
 * Day 9: [All in a Single Night](https://github.com/DestyNova/advent_of_code_2015/blob/main/day9/retro.md)
 * Day 10: [Elves Look, Elves Say](https://github.com/DestyNova/advent_of_code_2015/blob/main/day10/retro.md)
 * Day 11: [Corporate Policy](https://github.com/DestyNova/advent_of_code_2015/blob/main/day11/retro.md)
+* Day 12: [JSAbacusFramework.io](https://github.com/DestyNova/advent_of_code_2015/blob/main/day12/retro.md)

@@ -1,0 +1,48 @@
+import util.
+import read_json.
+
+main =>
+  R = solve(read_file_lines(),0),
+  println(R).
+
+solve([], N) = N.
+solve([X|Xs], N) = R =>
+  json_to_picat(X, Parsed, _),
+  sum_term(Parsed,M),
+  printf("sum_term returned %w\n", M),
+  R = solve(Xs, N + M).
+
+sum_term(X,R), map(X) =>
+  printf("sum_term for map %w\n", X),
+  % part 2
+  if(membchk("red", values(X))) then
+    println("Skipping red object"),
+    R = 0
+  else
+    C = 0,
+    foreach(T in values(X))
+      sum_term(T,N),
+      printf("T: %w, N: %w, R: %w\n", T, N, C),
+      C := C + N
+    end,
+    R = C, % not sure why this is needed rather than destructively updating R directly
+  end.
+
+sum_term(X,R), list(X) =>
+  printf("sum_term for list %w\n", X),
+  C = 0,
+  foreach(T in X)
+    printf("calling sum_term with T=%w\n",T),
+    sum_term(T,N),
+    printf("T: %w, N: %w, R: %w\n", T, N, R),
+    C := C + N
+  end,
+  printf("sum_term for list counted %w\n", C),
+  R = C.
+
+sum_term(X,R), number(X) =>
+  printf("sum_term for atomic %w\n", X),
+  R = X.
+
+sum_term(X,R) =>
+  R = 0.

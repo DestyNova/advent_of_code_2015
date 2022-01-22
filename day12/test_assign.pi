@@ -1,0 +1,8 @@
+main =>
+  f(123,R),
+  println(r=R).
+
+f(X,R) =>
+  T = 0,
+  T := X,
+  R = T.
