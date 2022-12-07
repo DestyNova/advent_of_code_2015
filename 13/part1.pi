@@ -1,0 +1,47 @@
+import cp.
+import util.
+
+main =>
+  Lines = read_file_lines(),
+  N = length(Lines),
+  Input = zip(1..N, Lines),
+  R = map(parse_line, Input),
+
+  Names = new_set([P : {I,P,Amount,Neighbour} in R]),
+  NameIndex = new_map(),
+  foreach ({Name,I} in zip(keys(Names), 1..N))
+    put(NameIndex, Name, I),
+  end,
+
+  do_solve(NameIndex, R)
+  .
+
+do_solve(Names, R) =>
+  NumSeats = size(Names),
+  Seats = new_array(NumSeats),
+  Seats :: 1..NumSeats,
+  % Seats = [1,2,3,4],
+  all_different(Seats),
+  Happiness = new_array(length(R)),
+
+  foreach({I,P,Amount,Neighbour} in R)
+    % println({I,P,Amount,Neighbour}),
+    PI = get(Names, P),
+    NI = get(Names, Neighbour),
+    Distance #= abs(Seats[PI] - Seats[NI]),
+    H #= cond(Distance #= 1, Amount, cond(Distance #= NumSeats-1, Amount, 0)),
+    % println({Distance,H}),
+    % println({I, PSeat, NSeat, Distance, H}),
+    Happiness[I] #= H,
+  end,
+
+  TotalHappiness #= sum(Happiness),
+  solve([$max(TotalHappiness)], Seats),
+  println(TotalHappiness),
+  % println(Happiness),
+  println(Seats).
+
+parse_line({I,S}) = R =>
+  [P,_,Sign,Units,_,_,_,_,_,_,Neighbour] = split(rstrip(S, ['.'])),
+  Amount = cond(Sign == "gain", 1, -1) * parse_term(Units),
+  R = {I,P,Amount,Neighbour}.
