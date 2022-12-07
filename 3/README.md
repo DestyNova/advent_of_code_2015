@@ -1,5 +1,5 @@
 # Day 3: [Perfectly Spherical Houses in a Vacuum](https://adventofcode.com/2015/day/3)
-*Picat: [Part 1](https://github.com/DestyNova/advent_of_code_2015/blob/main/day3/part1.pi) (00:27), [Part 2](https://github.com/DestyNova/advent_of_code_2015/blob/main/day3/part2.pi) (00:28)*
+*Picat: [Part 1](https://github.com/DestyNova/advent_of_code_2015/blob/main/3/part1.pi) (00:27), [Part 2](https://github.com/DestyNova/advent_of_code_2015/blob/main/3/part2.pi) (00:28)*
 
 Another easy warmup puzzle.
 

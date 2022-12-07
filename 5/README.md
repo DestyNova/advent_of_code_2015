@@ -1,5 +1,5 @@
 # Day 5: [Doesn't He Have Intern-Elves For This?](https://adventofcode.com/2015/day/5)
-*Picat: [Part 1](https://github.com/DestyNova/advent_of_code_2015/blob/main/day5/part1.pi), [Part 2](https://github.com/DestyNova/advent_of_code_2015/blob/main/day5/part2.pi)*
+*Picat: [Part 1](https://github.com/DestyNova/advent_of_code_2015/blob/main/5/part1.pi), [Part 2](https://github.com/DestyNova/advent_of_code_2015/blob/main/5/part2.pi)*
 
 Another fairly easy puzzle, this time involving string patterns.
 

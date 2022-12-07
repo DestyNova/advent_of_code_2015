@@ -1,5 +1,5 @@
 # Day 10: [Elves Look, Elves Say](https://adventofcode.com/2015/day/10)
-*Picat: [Both parts](https://github.com/DestyNova/advent_of_code_2015/blob/main/day10/main.pi) (only a single digit needs to change)*
+*Picat: [Both parts](https://github.com/DestyNova/advent_of_code_2015/blob/main/10/main.pi) (only a single digit needs to change)*
 
 Count the length of the look and say sequence iterated N times over a given input.
 

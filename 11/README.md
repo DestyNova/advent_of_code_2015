@@ -1,5 +1,5 @@
 # Day 11: [Corporate Policy](https://adventofcode.com/2015/day/11)
-*Picat: [Both parts](https://github.com/DestyNova/advent_of_code_2015/blob/main/day11/main.pi) (part 2 is just a different input)*
+*Picat: [Both parts](https://github.com/DestyNova/advent_of_code_2015/blob/main/11/main.pi) (part 2 is just a different input)*
 
 Find the next valid password according to Santa's corporate password policy scheme.
 

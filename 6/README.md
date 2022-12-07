@@ -1,5 +1,5 @@
 # Day 6: [Probably a Fire Hazard](https://adventofcode.com/2015/day/6)
-*Picat: [Part 1](https://github.com/DestyNova/advent_of_code_2015/blob/main/day6/part1.pi), [Part 2](https://github.com/DestyNova/advent_of_code_2015/blob/main/day6/part2.pi)*
+*Picat: [Part 1](https://github.com/DestyNova/advent_of_code_2015/blob/main/6/part1.pi), [Part 2](https://github.com/DestyNova/advent_of_code_2015/blob/main/6/part2.pi)*
 
 Another fairly easy puzzle that's amenable to an imperative-style solution.
 

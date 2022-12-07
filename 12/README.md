@@ -1,5 +1,5 @@
 # Day 12: [JSAbacusFramework.io](https://adventofcode.com/2015/day/12)
-*Picat: [Both parts](https://github.com/DestyNova/advent_of_code_2015/blob/main/day12/main.pi) (part 2 is a small restriction on part 1)*
+*Picat: [Both parts](https://github.com/DestyNova/advent_of_code_2015/blob/main/12/main.pi) (part 2 is a small restriction on part 1)*
 
 Sum integers in JSON (with lists and atoms as input, as well as complete JSON objects).
 
