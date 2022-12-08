@@ -1,0 +1,33 @@
+import util.
+
+main =>
+  Lines = read_file_lines(),
+  Input = map(parse_line, Lines),
+  println(run(Input, new_list(Input.length,0), 1)).
+
+run(Input, Scores, 2504) = max(Scores).
+run(Input, Scores, T) = R =>
+  N = Input.length,
+  Speeds = new_list(N),
+  foreach(I in 1..N)
+    Speeds[I] = calc(Input[I], T),
+  end,
+  {M,_} = max(Speeds),
+  
+  foreach(I in 1..N)
+    if(Speeds[I,1] == M) then
+      Scores[I] := Scores[I] + 1
+    end,
+  end,
+
+  R = run(Input, Scores, T+1).
+
+calc({N,Speed,Ft,Rt},T) = R =>
+  Cycles = T // (Ft+Rt),
+  Leftover = mod(T, Ft+Rt),
+
+  R = {Cycles*(Speed*Ft) + min(Leftover, Ft)*Speed, N}.
+
+parse_line(S) = R =>
+  [Name,_,_,Speed,_,_,FlyTime,_,_,_,_,_,_,RestTime,_] = split(S),
+  R = {Name,parse_term(Speed),parse_term(FlyTime),parse_term(RestTime)}.

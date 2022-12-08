@@ -1,0 +1,16 @@
+import util.
+
+main =>
+  Lines = read_file_lines(),
+  Input = map(parse_line, Lines),
+  println(max(map(calc, Input))).
+
+calc({N,Speed,Ft,Rt}) = R =>
+  T = 2503,
+  Cycles = T // (Ft+Rt),
+  Leftover = mod(T, Ft+Rt),
+  R = {Cycles*(Speed*Ft) + min(Leftover, Ft)*Speed, N}.
+
+parse_line(S) = R =>
+  [Name,_,_,Speed,_,_,FlyTime,_,_,_,_,_,_,RestTime,_] = split(S),
+  R = {Name,parse_term(Speed),parse_term(FlyTime),parse_term(RestTime)}.
