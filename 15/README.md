@@ -7,9 +7,21 @@ Another fun constraint satisfaction problem.
 
 This one immediately jumped out as a constraint satisfaction problem, so I set to work trying to express the constraints. I got a bit confused along the way but eventually muddled through. At some point I got stuck with an inexplicable uninitialised value which I expected would cause a runtime error, but didn't. Guess this is a Prolog sort of thing.
 
-The solution took about 27 seconds to run using the `cp` module, which seemed slow given the fairly limited bounds of the variables. Swapping it for the `sat` module made it slower and I killed the process after about 2 minutes. Using the `mip` module, the CBC solver took 55.59 seconds and failed to find a solution.
+The solution took about 27 seconds to run using the `cp` module, which seemed slow given the fairly limited bounds of the variables. I tried a few things to speed things up:
 
-After adding a few more bounds annotations as previously suggested to me by Hakan Kjellerstrand, it ran with `cp` again in 10.27s, and with `sat` in 26.86s. I also tried with the `smt` module which spawns `z3`, but killed it after it ran for almost 23 minutes without getting anywhere. It's possible that adding a few more/better annotations would help, but I'm once again impressed at how good Picat's built-in solvers are.
+* Swapping `cp` for the `sat` module made it slower and I killed the process after about 2 minutes
+* Using the `mip` module, the CBC solver took 55.59 seconds and failed to find a solution
+* Adding a few more bounds annotations (previously suggested to me by Hakan Kjellerstrand) with `cp` again: 10.27s
+* ...with `sat`: 26.86s
+* ...with the `smt` which spawns `z3`: killed it after it ran for almost 23 minutes without getting anywhere
+* ...with `smt` and `cvc4`: killed it after it ran for 4 minutes with no output
+* Adding `split` to the `cp` solver options: 3.67s
+* `cp` and `reverse_split`: 3.095s (best so far)
+* Adding even more bounds annotations: no difference (for `cp`, at least)
+* Reducing bounds for each weighted cookie properties (e.g. `Cap`) from `-10000..10000` to `-500..500`: 7.18s with `split`, 5.95s with `reverse_split` (why?? looking at my input data, it can't be greater than `-500..500`; surely that should constrain the search more effectively?)
+* Trying `mip` again with the `glpk` solver: gave up after 13 minutes
+
+It's possible that adding a few more/better annotations would help, but I'm once again impressed at how good Picat's built-in solvers are.
 
 ## Part 2
 
