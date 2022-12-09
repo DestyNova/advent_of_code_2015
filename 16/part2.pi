@@ -1,0 +1,46 @@
+import util.
+
+main =>
+  Lines = read_file_lines(),
+  Input = map(parse_line, Lines),
+  %println(Input),
+  calc(Input).
+
+calc(Input) =>
+  N = length(Input),
+  Target = new_map([
+      "children"=3,
+      "cats"=7,
+      "samoyeds"=2,
+      "pomeranians"=3,
+      "akitas"=0,
+      "vizslas"=0,
+      "goldfish"=5,
+      "trees"=3,
+      "cars"=2,
+      "perfumes"=1]),
+
+  foreach(I in 1..N)
+    {Id,Clue1,Count1,Clue2,Count2,Clue3,Count3} = Input[I],
+
+    T1 = Target.get(Clue1),
+    T2 = Target.get(Clue2),
+    T3 = Target.get(Clue3),
+
+    Cond1 = cond(membchk(Clue1, ["cats", "trees"]),
+      T1 < Count1, cond(membchk(Clue1, ["pomeranians", "goldfish"]), T1 > Count1, T1 == Count1)),
+    Cond2 = cond(membchk(Clue2, ["cats", "trees"]),
+      T2 < Count2, cond(membchk(Clue2, ["pomeranians", "goldfish"]), T2 > Count2, T2 == Count2)),
+    Cond3 = cond(membchk(Clue3, ["cats", "trees"]),
+      T3 < Count3, cond(membchk(Clue3, ["pomeranians", "goldfish"]), T3 > Count3, T3 == Count3)),
+
+    if(Cond1 && Cond2 && Cond3) then
+      print("Possible match: "),
+      println(Id),
+    end,
+  end.
+
+parse_line(S) = R =>
+  Cleaned = delete_all(delete_all(S, ':'), ','),
+  [_,Id,Clue1,Count1,Clue2,Count2,Clue3,Count3|_] = split(Cleaned),
+  R = {Id,Clue1,parse_term(Count1),Clue2,parse_term(Count2),Clue3,parse_term(Count3)}.

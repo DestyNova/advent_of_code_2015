@@ -1,0 +1,44 @@
+import cp.
+import util.
+
+main =>
+  Lines = read_file_lines(),
+  Input = map(parse_line, Lines),
+  println(Input),
+  calc(Input).
+
+calc(Input) =>
+  N = length(Input),
+  Teaspoons = new_array(N),
+  Teaspoons :: 0..100,
+  sum(Teaspoons) #= 100,
+  Cap = new_array(N),
+  Cap :: -10000..10000,
+  Dur = new_array(N),
+  Dur :: -10000..10000,
+  Flav = new_array(N),
+  Flav :: -10000..10000,
+  Tex = new_array(N),
+  Tex :: -10000..10000,
+
+  foreach(I in 1..N)
+    [Capacity,Durability,Flavour,Texture,Calories] = Input[I],
+    Cap[I] #= Teaspoons[I]*Capacity,
+    Dur[I] #= Teaspoons[I]*Durability,
+    Flav[I] #= Teaspoons[I]*Flavour,
+    Tex[I] #= Teaspoons[I]*Texture,
+  end,
+
+  TCap #= sum(Cap),
+  TDur #= sum(Dur),
+  TFlav #= sum(Flav),
+  TTex #= sum(Tex),
+  TotalScore #= cond(TCap #< 0, 0, TCap) * cond(TDur #< 0, 0, TDur) * cond(TFlav #< 0, 0, TFlav) * cond(TTex #< 0, 0, TTex),
+
+  solve([$max(TotalScore)], Teaspoons),
+  println(spoons=Teaspoons),
+  println(TotalScore).
+
+parse_line(S) = R =>
+  [_,_,Capacity,_,Durability,_,Flavour,_,Texture,_,Calories|_] = split(delete_all(S, ',')),
+  R = map(parse_term, [Capacity,Durability,Flavour,Texture,Calories]).
