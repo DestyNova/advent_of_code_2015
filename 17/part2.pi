@@ -1,0 +1,31 @@
+import cp.
+import util.
+
+main =>
+  Lines = read_file_lines(),
+  Input = map(parse_line, Lines),
+  Min = find_min(Input, 150),
+  println("Minimum containers required"=Min),
+  Ways = calc(Input, 150, Min),
+  println("Total ways"=Ways).
+
+find_min(Input, T) = R =>
+  N = length(Input),
+  Containers = new_array(N),
+  Containers :: 0..1,
+  Amounts = new_array(N),
+
+  foreach(I in 1..N)
+    Amounts[I] #= Containers[I] * Input[I]
+  end,
+
+  Total #= sum(Amounts),
+  Total #= T,
+  solve([$min(sum(Containers))], Containers),
+  R = sum(Containers).
+
+
+calc([X], T, Containers) = cond(((X==T && Containers == 1) || (T==0 && Containers == 0)), 1, 0).
+calc([X|Xs], T, Containers) = calc(Xs, T, Containers) + calc(Xs, T-X, Containers-1).
+
+parse_line(S) = parse_term(S).

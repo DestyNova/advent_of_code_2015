@@ -1,5 +1,5 @@
 # Day 16: [Aunt Sue](https://adventofcode.com/2015/day/16)
-*Picat: [Part 1](https://github.com/DestyNova/advent_of_code_2016/blob/main/16/part1.pi), [Part 2](https://github.com/DestyNova/advent_of_code_2016/blob/main/16/part2.pi)*
+*Picat: [Part 1](https://github.com/DestyNova/advent_of_code_2015/blob/main/16/part1.pi), [Part 2](https://github.com/DestyNova/advent_of_code_2015/blob/main/16/part2.pi)*
 
 A puzzle that looked like a constraint satisfaction problem at first but turned out to be much easier.
 

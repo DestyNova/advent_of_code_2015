@@ -45,7 +45,7 @@ SUM:                            36            336             52           1777
 * Day 14: [Reindeer Olympics](https://github.com/DestyNova/advent_of_code_2015/blob/main/14/README.md)
 * Day 15: [Science for Hungry People](https://github.com/DestyNova/advent_of_code_2015/blob/main/15/README.md)
 * Day 16: [Aunt Sue](https://github.com/DestyNova/advent_of_code_2015/blob/main/16/README.md)
-* Day 17: [?](https://github.com/DestyNova/advent_of_code_2015/blob/main/17/README.md)
+* Day 17: [No Such Thing as Too Much](https://github.com/DestyNova/advent_of_code_2015/blob/main/17/README.md)
 * Day 18: [?](https://github.com/DestyNova/advent_of_code_2015/blob/main/18/README.md)
 * Day 19: [?](https://github.com/DestyNova/advent_of_code_2015/blob/main/19/README.md)
 * Day 20: [?](https://github.com/DestyNova/advent_of_code_2015/blob/main/20/README.md)

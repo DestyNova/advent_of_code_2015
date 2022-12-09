@@ -1,0 +1,13 @@
+import util.
+
+main =>
+  Lines = read_file_lines(),
+  Input = map(parse_line, Lines),
+  println(Input),
+  X = calc(Input, 150),
+  println(ways=X).
+
+calc([X], T) = cond((X==T || T==0), 1, 0).
+calc([X|Xs], T) = calc(Xs, T) + calc(Xs, T-X).
+
+parse_line(S) = parse_term(S).
