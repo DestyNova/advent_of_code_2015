@@ -1,0 +1,56 @@
+import util.
+
+main =>
+  Input = read_file_lines(),
+  render(Input),
+  G = update(Input, 100),
+  println("\n"),
+  println(count_lit(G)).
+
+render(G) => println(join(G, "\n")).
+
+count_lit(G) = R =>
+  S = flatten(G),
+  R = length(S) - length(delete_all(S, '#')).
+
+update(G, 0) = G.
+update(G, T) = R =>
+  H = length(G),
+  W = length(G[1]),
+  X = new_array(W,H),
+  % stuck on...
+  G[1,1] := '#',
+  G[1,W] := '#',
+  G[H,1] := '#',
+  G[H,W] := '#',
+
+  foreach(J in 1..H)
+    foreach(I in 1..W)
+      Neighbours = 0,
+      foreach(R in -1..1)
+        foreach(C in -1..1)
+          if(not(R == 0 && C == 0) && I+C > 0 && J+R > 0 && I+C <= W && J+R <= H) then
+            Neighbours := Neighbours + cond(G[J+R,I+C] == '#', 1, 0)
+          end,
+        end,
+      end,
+
+      X[J,I] := cond(G[J,I] == '#',
+          cond((Neighbours == 2 || Neighbours == 3), '#', '.'),
+          cond(Neighbours == 3, '#', '.')
+        )
+    end
+  end,
+
+  % stick lights on again
+  X[1,1] := '#',
+  X[1,W] := '#',
+  X[H,1] := '#',
+  X[H,W] := '#',
+
+  X2 = map(to_list, X.to_list()),
+  print("\n<    "),
+  print(T),
+  println("    >\n"),
+  % render(X2),
+  R = update(X2, T-1).
