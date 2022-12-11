@@ -1,0 +1,78 @@
+import cp. % 2.192s
+% import sat. % 5.945s with seq as strategy
+% import mip.  % too slow
+% import smt. % too slow
+
+import util.
+
+main =>
+  nolog,
+  Lines = read_file_lines(),
+  Input = map(parse_line, Lines),
+  println(Input),
+  calc(Input).
+
+calc(Input) =>
+  N = length(Input),
+  Teaspoons = new_array(N),
+  Teaspoons :: 0..100,
+  
+  sum(Teaspoons) #= 100,
+
+  %% ORIG
+  % Cap = new_array(N),
+  % Cap :: -10000..10000,
+  % Dur = new_array(N),
+  % Dur :: -10000..10000,
+  % Flav = new_array(N),
+  % Flav :: -10000..10000,
+  % Tex = new_array(N),
+  % Tex :: -10000..10000,
+
+  % foreach(I in 1..N)
+  %   [Capacity,Durability,Flavour,Texture,Calories] = Input[I],
+  %   Cap[I] #= Teaspoons[I]*Capacity,
+  %   Dur[I] #= Teaspoons[I]*Durability,
+  %   Flav[I] #= Teaspoons[I]*Flavour,
+  %   Tex[I] #= Teaspoons[I]*Texture,
+  % end,
+
+  % TCap #= sum(Cap),
+  % TDur #= sum(Dur),
+  % TFlav #= sum(Flav),
+  % TTex #= sum(Tex),
+
+
+  % hakank
+  InputT = Input.transpose,
+  scalar_product(Teaspoons,InputT[1],TCap),
+  scalar_product(Teaspoons,InputT[2],TDur),
+  scalar_product(Teaspoons,InputT[3],TFlav),
+  scalar_product(Teaspoons,InputT[4],TTex),
+  
+  
+  TotalScore #> 0, % hakank
+  TotalScore :: 1..213673680,
+  
+  % TotalScore #= cond(TCap #< 0, 0, TCap) * cond(TDur #< 0, 0, TDur) * cond(TFlav #< 0, 0, TFlav) * cond(TTex #< 0, 0, TTex), % ORIG
+  
+  TotalScore #= TCap*(TCap #> 0) * TDur*(TDur #> 0) * TFlav*(TFlav #> 0) * TTex*(TTex #> 0),  % hakank
+   
+  println(total_score=TotalScore),
+  println(teaspoons=Teaspoons),
+  
+  Vars = Teaspoons,
+  println(vars=Vars),
+  
+  % solve([reverse_split,$max(TotalScore)], Teaspoons), % ORIG
+  solve([inout,reverse_split,$max(TotalScore)], Teaspoons), % slightly faster
+  % solve([seq,$max(TotalScore)], Teaspoons),  % Option seq for SAT
+  % solve($[z3,logic("QF_FD"),$max(TotalScore),report(printf("TotalScore: %d\n",TotalScore))], Vars), % Testing  for smt/z3: Still very slow
+  
+  println(spoons=Teaspoons),
+  println(TotalScore).
+
+parse_line(S) = R =>
+  [_,_,Capacity,_,Durability,_,Flavour,_,Texture,_,Calories|_] = split(delete_all(S, ',')),
+  % R = map(parse_term, [Capacity,Durability,Flavour,Texture,Calories]). % ORIG
+  R = map(to_int, [Capacity,Durability,Flavour,Texture,Calories]). % hakank: using to_int/1 instead. (Not faster though.)

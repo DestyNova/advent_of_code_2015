@@ -23,6 +23,8 @@ The solution took about 27 seconds to run using the `cp` module, which seemed sl
 
 It's possible that adding a few more/better annotations would help, but I'm once again impressed at how good Picat's built-in solvers are.
 
+**Update:** I reached out to [Hakan Kjellerstrand](https://github.com/hakank/hakank) again for some tips, and he kindly obliged, explaining some tactics he used to make a revised version (see: `part1_hakank.pi`) which improves performance with some cool tricks I didn't know about, like the `transpose`+`scalar_product` trick which saves doing an imperative style mutating `foreach`. What a legend; thanks Hakan!
+
 ## Part 2
 
 Another problem whose part 2 was only a trivial addition to the part 1 solution thanks to Picat's constraint solver. The extra constraint `TCals #= 500` significantly reduces the search space, so the `cp` module finds the correct solution in about 800 ms.

@@ -34,6 +34,7 @@ calc(Input) =>
   TFlav #= sum(Flav),
   TTex #= sum(Tex),
   TotalScore #= cond(TCap #< 0, 0, TCap) * cond(TDur #< 0, 0, TDur) * cond(TFlav #< 0, 0, TFlav) * cond(TTex #< 0, 0, TTex),
+  TotalScore :: 0..100000000,
 
   solve([reverse_split,$max(TotalScore)], Teaspoons),
   println(spoons=Teaspoons),
