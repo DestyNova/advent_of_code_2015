@@ -1,0 +1,36 @@
+import util.
+
+main =>
+  [S,_|Rules] = read_file_lines().reverse(),
+  Replacements = parse_line(Rules, new_map()),
+  println(Replacements),
+
+  Expanded = expand(S, Replacements),
+  % Expanded = expand("HOHOHO", Replacements),
+  println(expanded=Expanded.delete(S).length).
+
+table
+expand("", Replacements) = [""].
+expand(S, Replacements) = R =>
+  Acc = [],
+  foreach(K in Replacements)
+    Prefix = K[1],
+    Options = K[2],
+    L = length(Prefix),
+
+    if(S.take(L) == Prefix) then
+      foreach(Replacement in Options)
+        Acc := (Acc ++ [Replacement ++ S.drop(L)]).new_set.keys,
+      end,
+    else
+      Acc := Acc ++ [S.take(1) ++ X : X in expand(S.drop(1), Replacements)],
+    end,
+  end,
+  R = Acc.new_set.keys.
+
+parse_line([], M) = M.
+parse_line([S|Rest], M) = R =>
+  [Left,_,Right] = split(S),
+  Rights = M.get(Left, []),
+  M.put(Left, [Right | Rights]),
+  R = parse_line(Rest, M).

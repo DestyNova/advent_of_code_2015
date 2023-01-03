@@ -1,0 +1,90 @@
+import planner.
+import util.
+
+main =>
+  [S0,_|Rules] = read_file_lines().reverse(),
+  Replacements = parse_input(Rules, new_map()),
+  println(Replacements),
+ 
+  get_global_map(g1).put(replacements,Replacements),
+  println(s0=S0.length),
+  % S1 = expand(S0, Replacements), % sloooow
+  % println(s1=S1.map(length).min),
+  % backtracking: slow
+  % minof_inc(greedy(S0,0,Replacements,Steps),Steps),
+  % println(steps=Steps),
+  best_plan(S0,Plan,Cost),
+  writeln(Plan),
+  writeln(Cost).
+
+table
+greedy([],Steps,_,T) =>
+  printf("Solution found with %d steps.\n", Steps),
+  T=Steps.
+greedy(S,Steps,Replacements,T) ?=>
+  % printf("########\nSteps: %d, s: %s\n", Steps, S),
+  Expanded = expand(S, Replacements).sort,
+  N = Expanded.length,
+  Steps < 128,
+  (S.length / (128 - Steps)) < 10,
+  (S == "" || N > 1),
+  if(N > 1) then
+    member(S2,Expanded),
+    % printf("Steps: %d, n: %d\n", Steps, N),
+    % println(s1=Expanded),
+    % println(s2=S2),
+    greedy(S2,Steps+1,Replacements,T),
+  else
+    false
+  end.
+
+final(S) =>
+%  edit(S,Target,D),
+  if(length(S) < 600) then
+    printf("%d: %s\n\n", S.length, S)
+  end,
+  S == "".
+
+action(S, S1, Action, Cost) ?=>
+  Replacements = get_global_map(g1).get(replacements), % test putting this in the state later
+  Expanded = expand(S, Replacements).delete(S),
+  member(Action, 1..Expanded.length),
+  S1 = Expanded[Action],
+  Cost = 1.
+
+heuristic(S) = R =>
+  R = S.length / 9.
+  % printf("%.1f\n", R).
+
+table
+expand("", Replacements) = [""].
+expand(S, Replacements) = R =>
+  Acc = new_set(),
+  foreach(K in Replacements)
+    Prefix = K[1],
+    Options = K[2],
+    L = length(Prefix),
+
+    if(S.take(L) == Prefix) then
+      Dropped = S.drop(L),
+      foreach(Replacement in Options)
+        foreach(R in [Replacement ++ Dropped])
+          Acc.put(R)
+        end,
+        % Acc := Acc ++ [Replacement ++ Dropped],
+      end,
+    else
+      % Acc := Acc ++ [[S.first|X] : X in expand(S.tail, Replacements)],
+      foreach(P in [[S.first|X] : X in expand(S.tail, Replacements)])
+        Acc.put(P)
+      end,
+    end,
+  end,
+  R = Acc.keys.
+
+parse_input([], M) = M.
+parse_input([S|Rest], M) = R =>
+  [Dest,_,Source] = split(S),
+  Dests = M.get(Source, []),
+  M.put(Source, [cond(Dest == "e", "", Dest) | Dests]),
+  R = parse_input(Rest, M).

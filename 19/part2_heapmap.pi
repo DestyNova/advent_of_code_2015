@@ -1,0 +1,74 @@
+import planner.
+import util.
+
+main =>
+  [Target,_|Rules] = read_file_lines().reverse(),
+  Replacements = parse_line(Rules, new_map()),
+  println(Replacements),
+ 
+  S0 = "e",
+  get_global_map(g1).put(replacements,Replacements),
+  get_global_map(g1).put(target,Target),
+  best_plan(S0,Plan,Cost),
+  writeln(Plan),
+  writeln(Cost).
+
+final(S) =>
+%  edit(S,Target,D),
+%  println(D),
+  Target = get_global_map(g1).get(target),
+  S == Target.
+
+action(S, S1, Action, Cost) ?=>
+  Replacements = get_global_map(g1).get(replacements), % test putting this in the state later
+  Target = get_global_map(g1).get(target),
+  Expanded = expand(S, Replacements).delete(S),
+  member(Action, 1..Expanded.length),
+  S1 = Expanded[Action],
+  Cost = 1.
+
+%furistic({S,Target}) => abs(Target.length - S.length) div 10.
+table(+)
+heuristic(S) = R =>
+  Target = get_global_map(g1).get(target),
+  edit(S, Target, Dist),
+  % this probably isn't admissible though, since some replacements can change like 10 characters
+  R = max(max(0,Dist - 9),abs(Target.length - S.length) div 10),
+  println(r=R).
+
+table(+,+,min)
+edit([],[],D) => D = 0.
+edit([X|Xs],[X|Ys],D) =>
+  edit(Xs,Ys,D).
+edit(Xs,[Y|Ys],D) ?=> % insert
+  edit(Xs,Ys,D1),
+  D = D1+1.
+edit([X|Xs],Ys,D) => % delete
+  edit(Xs,Ys,D1),
+  D = D1+1.
+
+table(+)
+expand("", Replacements) = [""].
+expand(S, Replacements) = R =>
+  Acc = [],
+  foreach(K in Replacements)
+    Prefix = K[1],
+    Options = K[2],
+    L = length(Prefix),
+
+    if(S.take(L) == Prefix) then
+      foreach(Replacement in Options)
+        Acc := (Acc ++ [Replacement ++ S.drop(L)]).new_set.keys,
+      end,
+    else
+      Acc := Acc ++ [S.take(1) ++ X : X in expand(S.drop(1), Replacements)],
+    end,
+  end,
+  R = Acc.new_set.keys.
+
+parse_line([], M) = M.
+parse_line([S|Rest], M) = R =>
+  [Left,_,Right] = split(S),
+  Rights = M.get(Left, []),
+  M.put(Left, [Right | Rights]),
+  R = parse_line(Rest, M).
