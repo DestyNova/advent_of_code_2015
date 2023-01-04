@@ -12,21 +12,26 @@ main =>
 table
 expand("", Replacements) = [""].
 expand(S, Replacements) = R =>
-  Acc = [],
+  Acc = new_set(),
   foreach(K in Replacements)
     Prefix = K[1],
     Options = K[2],
     L = length(Prefix),
 
     if(S.take(L) == Prefix) then
+      Dropped = S.drop(L),
       foreach(Replacement in Options)
-        Acc := (Acc ++ [Replacement ++ S.drop(L)]).new_set.keys,
+        foreach(R in [Replacement ++ Dropped])
+          Acc.put(R)
+        end,
       end,
     else
-      Acc := Acc ++ [S.take(1) ++ X : X in expand(S.drop(1), Replacements)],
+      foreach(P in [[S.first|X] : X in expand(S.tail, Replacements)])
+        Acc.put(P)
+      end,
     end,
   end,
-  R = Acc.new_set.keys.
+  R = Acc.keys.
 
 parse_line([], M) = M.
 parse_line([S|Rest], M) = R =>
