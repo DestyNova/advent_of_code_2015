@@ -10,26 +10,51 @@ main =>
   println(s0=S0.length),
   % S1 = expand(S0, Replacements), % sloooow
   % println(s1=S1.map(length).min),
-  % backtracking: slow
-  % minof_inc(greedy(S0,0,Replacements,Steps),Steps),
+  % greedy backtracking: runs out of memory after 19 mins, stuck about 180-200 steps in
+  % greedy(S0,0,Replacements,Steps),
   % println(steps=Steps),
-  best_plan(S0,Plan,Cost),
+  plan(S0,Plan,Cost),
   writeln(Plan),
   writeln(Cost).
 
+% report(X) => println(report=X).
+
+greedy_no_bt("e",Steps,_,T) =>
+  printf("Solution found with %d steps.\n", Steps),
+  T=Steps.
+
+greedy_no_bt(S,Steps,Replacements,T) =>
+  printf("########\nSteps: %d, s: %s, len: %d\n", Steps, S, S.len),
+  Expanded = expand(S, Replacements).sort,
+  N = Expanded.length,
+  if(N > 1) then
+    Candidates = [(Candidate.length,Candidate) : Candidate in Expanded, Candidate != S].sort,
+    println(candidates=Candidates),
+    [S2|_] = [C : (_,C) in Candidates],
+    % S2 = Candidates.first,
+    % printf("Steps: %d, n: %d\n", Steps, N),
+    % println(s1=Expanded),
+    % println(s2=S2),
+    greedy_no_bt(S2,Steps+1,Replacements,T),
+  else
+    println(wat=Expanded),
+    false
+  end.
+
 table
-greedy([],Steps,_,T) =>
+greedy("e",Steps,_,T) =>
   printf("Solution found with %d steps.\n", Steps),
   T=Steps.
 greedy(S,Steps,Replacements,T) ?=>
-  % printf("########\nSteps: %d, s: %s\n", Steps, S),
+  printf("########\nSteps: %d, s: %s\n", Steps, S),
   Expanded = expand(S, Replacements).sort,
   N = Expanded.length,
-  Steps < 128,
-  (S.length / (128 - Steps)) < 10,
-  (S == "" || N > 1),
+  Steps < 360,
+  % (S.length / (128 - Steps)) < 10,
+  (S == "" || N >= 1),
   if(N > 1) then
-    member(S2,Expanded),
+    Candidates = [C : (_,C) in [(Candidate.length,Candidate) : Candidate in Expanded, Candidate != S].sort],
+    member(S2,Candidates),
     % printf("Steps: %d, n: %d\n", Steps, N),
     % println(s1=Expanded),
     % println(s2=S2),
@@ -39,22 +64,19 @@ greedy(S,Steps,Replacements,T) ?=>
   end.
 
 final(S) =>
-%  edit(S,Target,D),
-  if(length(S) < 600) then
-    printf("%d: %s\n\n", S.length, S)
-  end,
-  S == "".
+  printf("%d: %s\n\n", S.length, S),
+  S == "e".
 
 action(S, S1, Action, Cost) ?=>
-  Replacements = get_global_map(g1).get(replacements), % test putting this in the state later
+  Replacements = get_global_map(g1).get(replacements),
   Expanded = expand(S, Replacements).delete(S),
   member(Action, 1..Expanded.length),
   S1 = Expanded[Action],
+  (S1 == "e" || length([1 : C in S1, C == 'e']) == 0),
   Cost = 1.
 
-heuristic(S) = R =>
-  R = S.length / 9.
-  % printf("%.1f\n", R).
+% absolutely definitely inadmissible heuristic. 9 or 10 would seem "correct" but search never terminates.
+heuristic(S) = R => R = S.length / 2.5.
 
 table
 expand("", Replacements) = [""].
@@ -86,5 +108,5 @@ parse_input([], M) = M.
 parse_input([S|Rest], M) = R =>
   [Dest,_,Source] = split(S),
   Dests = M.get(Source, []),
-  M.put(Source, [cond(Dest == "e", "", Dest) | Dests]),
+  M.put(Source, [cond(Dest == "e", "e", Dest) | Dests]),
   R = parse_input(Rest, M).
