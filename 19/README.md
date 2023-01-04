@@ -17,9 +17,11 @@ Eventually I searched for some hints and found someone else had gotten the whole
 
 **Update 2023-01-04 02:45:** Well, tweaking the heuristic in a very dodgy way allowed it to greedily run to completion. I found [another writeup](https://www.reddit.com/r/adventofcode/comments/3xflz8/comment/cy4etju/) which really cleverly reverse-engineered the problem, which apparently only has _one_ possible solution, so there's no point continuing the search after (if) it finds a solution. With that in mind, I swapped out `best_plan` for `plan` and it finished (for some heuristic settings) after about 4 minutes. Think I'll try the clever solution tomorrow, which seems like it shouldn't require _any_ expansion/shrink steps, and should therefore finish in a few milliseconds! Wow. I like the idea of a generic search / optimisation system finding its way to the correct solution without heavy guidance from the programmer, but at the same time it's pretty cool to have that be purposely strewn with red herrings so that the only solution is to sit down and analyse the input data.
 
-**Update 2023-01-04 17:20:** I took a few minutes to read and understand [askalski's excellent writeup](https://www.reddit.com/r/adventofcode/comments/3xflz8/comment/cy4etju/), and was able to implement his solution in a few lines of Picat, producing the right answer in 12 milliseconds, providing a speed boost of at least 20000x over my flakey graph search solution. Not bad.
+**Update 2023-01-04 17:20:** I took a few minutes to read and understand [askalski's excellent writeup](https://www.reddit.com/r/adventofcode/comments/3xflz8/comment/cy4etju/), and was able to implement his solution in a few lines of Picat, producing the right answer in 12 milliseconds, providing a speed boost of at least 20000x over my flakey graph search solution. Not bad!
 
 ## Reflections
+
+This is one of those puzzles where you can throw yourself into coding a "standard" generic solution that is almost guaranteed to fail. A trap to catch those of us who fire arrows without aiming, if you will. I probably should have paused as soon as the combinatorial explosion of the state-action space -- and lack of a helpful heuristic -- started to become an obvious problem. Reading askalski's analysis was a reminder that these puzzles are designed to make you think, not just spew out code (even if you can usually get away with doing that).
 
 ## Error collection
 
