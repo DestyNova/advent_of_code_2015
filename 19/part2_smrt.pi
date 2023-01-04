@@ -1,0 +1,15 @@
+import util.
+
+% This version implements the clever, hidden solution to the puzzle, described here by "askalski":
+% https://www.reddit.com/r/adventofcode/comments/3xflz8/comment/cy4etju/
+% While my bruteforce "informed" search solutions took at least 3-4 minutes to find a solution, and often
+% ran for 10-20 minutes and ran out of memory, this method finds the answer in 12ms with no expansions/shrinks.
+main =>
+  [S0,_|Rules] = read_file_lines().reverse(),
+  Syms = [X : S in Rules, [X|_] = split(S)].remove_dups ++ ["Rn", "Ar", "Y"], % add symbols corresponding to '(' ',' ')'
+  Parens = 2 * count_matches(S0, "Rn"),
+  Ys = count_matches(S0, "Y"),
+  NumSyms = sum([count_matches(S0, Sym) : Sym in Syms]),
+  printf("Steps: %d\n", NumSyms - Parens - 2*Ys - 1).
+
+count_matches(S, Sub) = findall(F,find(S,Sub,F,T)).length.

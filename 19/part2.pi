@@ -13,7 +13,7 @@ main =>
   % greedy backtracking: runs out of memory after 19 mins, stuck about 180-200 steps in
   % greedy(S0,0,Replacements,Steps),
   % println(steps=Steps),
-  plan(S0,Plan,Cost),
+  plan(S0,Plan,Cost),  % works with fudged (bad) heuristic function, otherwise takes ages then runs out of memory
   writeln(Plan),
   writeln(Cost).
 
