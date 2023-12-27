@@ -1,1 +1,4 @@
 *.qi
+input
+input_*
+__*
