@@ -11,20 +11,26 @@ I'd recommend the Advent of Code to anyone -- they're really fun and interesting
 * [2019](https://github.com/DestyNova/advent_of_code_2019) (unfinished, will resume later...)
 * [2020](https://github.com/DestyNova/advent_of_code_2020) (mostly Haskell, one or two in Rust, Python and zz)
 * [2021](https://github.com/DestyNova/advent_of_code_2021) (all Haskell except day 24 in Picat)
+* [2022](https://github.com/DestyNova/advent_of_code_2022) (mostly Nim with a couple of Picat programs)
+* [2023](https://github.com/DestyNova/advent_of_code_2023) (mostly Picat with a couple of Nim programs)
 
 ## Current code stats with [cloc](https://github.com/AlDanial/cloc)
 
 ```
-github.com/AlDanial/cloc v 1.86  T=0.02 s (2320.8 files/s, 139569.5 lines/s)
--------------------------------------------------------------------------------
-Language                     files          blank        comment           code
--------------------------------------------------------------------------------
-Prolog                          21            178             50           1506
-Markdown                        12            146              0            240
-Bourne Shell                     3             12              2             31
--------------------------------------------------------------------------------
-SUM:                            36            336             52           1777
--------------------------------------------------------------------------------
+───────────────────────────────────────────────────────────────────────────────
+Language                     Files       Lines     Blanks    Comments      Code
+───────────────────────────────────────────────────────────────────────────────
+Picat                           40        2647        303         115      2229
+Plain Text                      28        3083          4           0      3079
+Markdown                        21         659        248           0       411
+Nim                              2          37          8           0        29
+License                          1          21          5           0        16
+gitignore                        1           4          0           0         4
+───────────────────────────────────────────────────────────────────────────────
+Total                           93        6451        568         115      5768
+───────────────────────────────────────────────────────────────────────────────
+Processed 216668 bytes, 0.217 megabytes (SI)
+───────────────────────────────────────────────────────────────────────────────
 ```
 
 ## Retrospectives
@@ -47,8 +53,8 @@ SUM:                            36            336             52           1777
 * Day 16: [Aunt Sue](https://github.com/DestyNova/advent_of_code_2015/blob/main/16)
 * Day 17: [No Such Thing as Too Much](https://github.com/DestyNova/advent_of_code_2015/blob/main/17)
 * Day 18: [Like a GIF For Your Yard](https://github.com/DestyNova/advent_of_code_2015/blob/main/18)
-* Day 19: [?](https://github.com/DestyNova/advent_of_code_2015/blob/main/19)
-* Day 20: [?](https://github.com/DestyNova/advent_of_code_2015/blob/main/20)
+* Day 19: [Medicine for Rudolph](https://github.com/DestyNova/advent_of_code_2015/blob/main/19)
+* Day 20: [Infinite Elves and Infinite Houses](https://github.com/DestyNova/advent_of_code_2015/blob/main/20)
 * Day 21: [?](https://github.com/DestyNova/advent_of_code_2015/blob/main/21)
 * Day 22: [?](https://github.com/DestyNova/advent_of_code_2015/blob/main/22)
 * Day 23: [?](https://github.com/DestyNova/advent_of_code_2023/blob/main/23)

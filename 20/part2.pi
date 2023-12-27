@@ -1,0 +1,25 @@
+main =>
+  N = read_file_lines().head.parse_term(),
+  L = ceiling(N // 11),
+
+  Presents = new_array(L),
+  foreach (I in 1..L)
+    % each house starts with 0 presents
+    Presents[I] = 0
+  end,
+
+  foreach (Elf in 1..L)
+    House = Elf,
+    while (House < L && House // Elf <= 50)
+      Presents[House] := Presents[House] + Elf * 11,
+      % no need to check all houses; just jump straight to the next multiple of Elf
+      House := House + Elf
+    end
+  end,
+
+  foreach (I in 1..L)
+    if Presents[I] >= N then
+      println(I),
+      exit()
+    end
+  end.
