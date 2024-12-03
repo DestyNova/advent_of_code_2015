@@ -1,0 +1,49 @@
+import planner.
+import util.
+
+main =>
+  % state: mana spent, player hp, p armour, p mana, boss hp, shield_turns, poison_t, recharge_t
+  S0 = {0, 10, 0, 250, 13, 0, 0, 0},
+ 
+  best_plan(S0,Plan,Cost),  % works with fudged (bad) heuristic function, otherwise takes ages then runs out of memory
+  writeln(Plan),
+  writeln(Cost).
+
+final(S) => S[2] > 0 && S[5] <= 0.
+
+Shield_cost = 113.
+Poison_cost = 173.
+Recharge_cost = 229.
+
+action_cost(shield) = Shield_cost.
+action_cost(poison) = Poison_cost.
+action_cost(recharge) = Recharge_cost.
+
+action({Mana_spent, Hp, Armour, Mana, Boss_hp, Shield_turns, Poison_turns, Recharge_turns}, S1, Action, Cost) ?=>
+  Hp > 0,
+  member(Action, [missile, drain, shield, poison, recharge]),
+  not (Action == shield && (Shield_turns > 0 || Mana < Shield_cost)),
+  not (Action == poison && (Poison_turns > 0 || Mana < Poison_cost)),
+  not (Action == recharge && (Recharge_turns > 0 || Mana < Recharge_cost)),
+
+  Cost = action_cost(Action),
+  Mana2 = Mana - Cost,
+
+  Poison_turns2 = cond(Action == poison, 6, max(0, Poison_turns - 1)),
+  Poison_dmg = cond(Poison_turns2 >= 0, 3, 0),
+  Shield_turns2, = cond(Action == shield, 6, max(0, Shield_turns - 1)),
+  Shield_armour = Armour + cond(Shield_turns2 >= 0, 7, 0),
+  Recharge_turns2, = cond(Action == recharge, 5, max(0, Recharge_turns - 1)),
+  Mana_next = Mana2 + cond(Recharge_turns2 >= 0, 101, 0),
+
+  % apply magic missile / drain
+
+  % apply effects to boss turn (how to neatly track state update w/o duplication?
+  % I guess move into an fn taking state tuple but w/ mana after casting spell
+  % apply boss attack dmg if alive
+
+  (S1 == "e" || length([1 : C in S1, C == 'e']) == 0),
+  nl.
+
+% absolutely definitely inadmissible heuristic. 9 or 10 would seem "correct" but search never terminates.
+% heuristic(S) = R => R = S.length / 2.5.
